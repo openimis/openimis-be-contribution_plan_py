@@ -1,15 +1,8 @@
 import uuid
 
 from django.db import models
-from core.models import InteractiveUser
-from django.conf import settings
-from django.db import models
 from core import models as core_models, fields
-from graphql import ResolveInfo
 from jsonfallback.fields import FallbackJSONField
-from location.models import Location
-from insuree.models import Insuree
-from policy.models import Policy
 from product.models import Product
 
 
@@ -36,7 +29,6 @@ class ContributionPlanBundle(core_models.UUIDVersionedModel):
     date_valid_to = fields.DateTimeField("DateValidTo")
 
     class Meta:
-        managed = False
         db_table = 'tblContributionPlanBundle'
 
 
@@ -67,7 +59,6 @@ class ContributionPlan(core_models.UUIDVersionedModel):
     date_valid_to = fields.DateTimeField("DateValidTo")
 
     class Meta:
-        managed = False
         db_table = 'tblContributionPlan'
 
 
@@ -110,5 +101,4 @@ class ContributionPlanBundleDetails(models.Model):
     object = ContributionPlanBundleDetailsManager()
 
     class Meta:
-        managed = False
         db_table = 'tblContributionPlanBundleDetails'
