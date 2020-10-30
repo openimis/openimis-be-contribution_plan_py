@@ -17,7 +17,7 @@ class ContributionPlanBundleManager(models.Manager):
 
 class ContributionPlanBundle(core_models.UUIDVersionedModel):
     id = models.AutoField(db_column='ContributionPlanBundleId', primary_key=True)
-    uuid = models.CharField(db_column='ContributionPlanBundleUUID', max_length=255, default=uuid.uuid4, unique=True)
+    uuid = models.CharField(db_column='ContributionPlanBundleUUID', max_length=36, default=uuid.uuid4, unique=True)
     version = models.IntegerField()
 
     active = models.BooleanField(db_column='Active')
@@ -55,7 +55,7 @@ class ContributionPlanManager(models.Manager):
 
 class ContributionPlan(core_models.UUIDVersionedModel):
     id = models.AutoField(db_column='ContributionPlanId', primary_key=True)
-    uuid = models.CharField(db_column='ContributionPlanUUID', max_length=255, default=uuid.uuid4, unique=True)
+    uuid = models.CharField(db_column='ContributionPlanUUID', max_length=36, default=uuid.uuid4, unique=True)
     version = models.IntegerField()
 
     active = models.BooleanField(db_column='Active')
@@ -96,8 +96,8 @@ class ContributionPlanBundleDetailsManager(models.Manager):
 
 class ContributionPlanBundleDetails(core_models.UUIDVersionedModel):
     id = models.AutoField(db_column='ContributionPlanBundleDetailsId', primary_key=True)
-    uuid = models.CharField(db_column='ContributionPlanBundleDetailsUUID',
-                            max_length=255, default=uuid.uuid4, unique=True)
+    uuid = models.CharField(db_column='ContributionPlanBundleDetailsUUID', max_length=36,
+                            default=uuid.uuid4, unique=True)
     version = models.IntegerField()
 
     contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, db_column="ContributionPlanBundleUUID",
