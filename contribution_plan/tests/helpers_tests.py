@@ -96,12 +96,12 @@ class HelpersTest(TestCase):
 
     def __create_test_contribution_plan_bundle(self, custom=False):
         custom_params = self.__custom_contribution_plan_bundle_params if custom else {}
-        return self.__create_test_instance(create_test_contribution_plan_bundle, custom_parameters=custom_params)
+        return self.__create_test_instance(create_test_contribution_plan_bundle, custom_props=custom_params)
 
     def __create_test_contribution_plan(self, custom=False):
         custom_params = self.__custom_contribution_plan_params if custom else {}
-        return self.__create_test_instance(create_test_contribution_plan, custom_parameters=custom_params)
+        return self.__create_test_instance(create_test_contribution_plan, custom_props=custom_params)
 
     def __create_test_contribution_plan_details(self, custom=False):
         custom_params = self.__custom_contribution_plan_details_params if custom else {}
-        return self.__create_test_instance(create_test_contribution_plan_details, custom_parameters=custom_params)
+        return self.__create_test_instance(create_test_contribution_plan_details, custom_props=custom_params)

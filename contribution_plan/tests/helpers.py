@@ -8,7 +8,7 @@ from core.models import InteractiveUser, User
 from product.test_helpers import create_test_product
 
 
-def create_test_contribution_plan_bundle(custom_parameters={}):
+def create_test_contribution_plan_bundle(custom_props={}):
     user = __get_or_create_simple_contribution_plan_user()
     object_data = {
         'version': 1,
@@ -22,12 +22,12 @@ def create_test_contribution_plan_bundle(custom_parameters={}):
         'user_created': user,
         'date_valid_from': date(2010, 10, 30),
         'date_valid_to': None,
-        **custom_parameters
+        **custom_props
     }
     return ContributionPlanBundle.objects.create(**object_data)
 
 
-def create_test_contribution_plan(product=None, custom_parameters={}):
+def create_test_contribution_plan(product=None, custom_props={}):
     if not product:
         product = create_test_product("PlanCode")
 
@@ -47,14 +47,14 @@ def create_test_contribution_plan(product=None, custom_parameters={}):
         'user_created': user,
         'date_valid_from': date(2010, 10, 30),
         'date_valid_to': None,
-        **custom_parameters
+        **custom_props
     }
     
     return ContributionPlan.objects.create(**object_data)
 
 
 def create_test_contribution_plan_details(contribution_plan_bundle=None, contribution_plan=None,
-                                          custom_parameters={}):
+                                          custom_props={}):
     if not contribution_plan_bundle:
         contribution_plan_bundle = create_test_contribution_plan_bundle()
 
@@ -73,7 +73,7 @@ def create_test_contribution_plan_details(contribution_plan_bundle=None, contrib
         'date_valid_from': date(2010, 10, 30),
         'date_valid_to': None,
         'active': 1,
-        **custom_parameters
+        **custom_props
     }
 
     return ContributionPlanBundleDetails.objects.create(**object_data)
