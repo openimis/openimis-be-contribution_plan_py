@@ -53,8 +53,8 @@ def create_test_contribution_plan(product=None, custom_props={}):
     return ContributionPlan.objects.create(**object_data)
 
 
-def create_test_contribution_plan_details(contribution_plan_bundle=None, contribution_plan=None,
-                                          custom_props={}):
+def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, contribution_plan=None,
+                                                 custom_props={}):
     if not contribution_plan_bundle:
         contribution_plan_bundle = create_test_contribution_plan_bundle()
 
