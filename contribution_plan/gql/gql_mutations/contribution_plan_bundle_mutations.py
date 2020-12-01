@@ -1,11 +1,13 @@
-from contribution_plan.gql.gql_mutations import ContributionPlanBundleInputType
-from contribution_plan.gql.gql_mutations.base_mutation import BaseDeleteMutation, BaseDeleteMutationMixin, \
+from core.gql.gql_mutations import DeleteInputType
+from core.gql.gql_mutations.base_mutation import BaseDeleteMutation, BaseDeleteMutationMixin, \
     BaseUpdateMutationMixin, BaseMutation, BaseCreateMutationMixin
+from contribution_plan.gql.gql_mutations import ContributionPlanBundleInputType
 from contribution_plan.models import ContributionPlanBundle
 
 
 class CreateContributionPlanBundleMutation(BaseMutation, BaseCreateMutationMixin):
     _mutation_class = "ContributionPlanBundleMutation"
+    _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
 
     class Input(ContributionPlanBundleInputType):
@@ -14,14 +16,16 @@ class CreateContributionPlanBundleMutation(BaseMutation, BaseCreateMutationMixin
 
 class DeleteContributionPlanBundleMutation(BaseDeleteMutation, BaseDeleteMutationMixin):
     _mutation_class = "ContributionPlanBundleMutation"
+    _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
 
-    class Input(ContributionPlanBundleInputType):
+    class Input(DeleteInputType):
         pass
 
 
 class UpdateContributionPlanBundleMutation(BaseMutation, BaseUpdateMutationMixin):
     _mutation_class = "ContributionPlanBundleMutation"
+    _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
 
     class Input(ContributionPlanBundleInputType):

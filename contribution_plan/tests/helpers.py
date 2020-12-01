@@ -80,6 +80,7 @@ def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, 
 
 
 def __get_or_create_simple_contribution_plan_user():
-    user, _ = User.objects.get_or_create(username='contribution_plan_user',
-                                         i_user=InteractiveUser.objects.first())
+    user = User.objects.get(username="admin")
+    #user, _ = User.objects.get_or_create(username='contribution_plan_user',
+    #                                     i_user=InteractiveUser.objects.first())
     return user
