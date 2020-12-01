@@ -1,7 +1,9 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from core import models as core_models, fields
+from graphql import ResolveInfo
 from jsonfallback.fields import FallbackJSONField
 from product.models import Product
 
@@ -39,6 +41,17 @@ class ContributionPlanBundle(core_models.UUIDVersionedModel):
     date_valid_to = fields.DateTimeField(db_column="DateValidTo", null=True)
 
     objects = ContributionPlanBundleManager()
+
+    @classmethod
+    def get_queryset(cls, queryset, user):
+        queryset = cls.filter_queryset(queryset)
+        if isinstance(user, ResolveInfo):
+            user = user.context.user
+        if settings.ROW_SECURITY and user.is_anonymous:
+            return queryset.filter(id=-1)
+        if settings.ROW_SECURITY:
+            pass
+        return queryset
 
     class Meta:
         db_table = 'tblContributionPlanBundle'
@@ -81,6 +94,17 @@ class ContributionPlan(core_models.UUIDVersionedModel):
 
     objects = ContributionPlanManager()
 
+    @classmethod
+    def get_queryset(cls, queryset, user):
+        queryset = cls.filter_queryset(queryset)
+        if isinstance(user, ResolveInfo):
+            user = user.context.user
+        if settings.ROW_SECURITY and user.is_anonymous:
+            return queryset.filter(id=-1)
+        if settings.ROW_SECURITY:
+            pass
+        return queryset
+
     class Meta:
         db_table = 'tblContributionPlan'
 
@@ -122,6 +146,17 @@ class ContributionPlanBundleDetails(core_models.UUIDVersionedModel):
     active = models.BooleanField(db_column='Active')
 
     objects = ContributionPlanBundleDetailsManager()
+
+    @classmethod
+    def get_queryset(cls, queryset, user):
+        queryset = cls.filter_queryset(queryset)
+        if isinstance(user, ResolveInfo):
+            user = user.context.user
+        if settings.ROW_SECURITY and user.is_anonymous:
+            return queryset.filter(id=-1)
+        if settings.ROW_SECURITY:
+            pass
+        return queryset
 
     class Meta:
         db_table = 'tblContributionPlanBundleDetails'
