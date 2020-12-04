@@ -10,13 +10,24 @@ from contribution_plan.gql.gql_mutations.contribution_plan_bundle_mutations impo
 from contribution_plan.gql.gql_mutations.contribution_plan_mutations import CreateContributionPlanMutation, \
     UpdateContributionPlanMutation, DeleteContributionPlanMutation
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
-from core.schema import OrderedDjangoFilterConnectionField, signal_mutation_module_validate
+from core.schema import OrderedDjangoFilterConnectionField
 
 
 class Query(graphene.ObjectType):
-    contribution_plan_bundle = OrderedDjangoFilterConnectionField(ContributionPlanBundleGQLType)
-    contribution_plan = OrderedDjangoFilterConnectionField(ContributionPlanGQLType)
-    contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(ContributionPlanBundleDetailsGQLType)
+    contribution_plan_bundle = OrderedDjangoFilterConnectionField(
+        ContributionPlanBundleGQLType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    contribution_plan = OrderedDjangoFilterConnectionField(
+        ContributionPlanGQLType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
+
+    contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
+        ContributionPlanBundleDetailsGQLType,
+        orderBy=graphene.List(of_type=graphene.String),
+    )
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
         query = ContributionPlanBundle.objects
