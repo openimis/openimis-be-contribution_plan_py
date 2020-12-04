@@ -11,9 +11,9 @@ class ContributionPlanBundleGQLType(DjangoObjectType):
         exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
-            "uuid": ["exact"],
+            #"uuid": ["exact"],
             "version": ["exact"],
-            "active": ["exact"],
+            #"active": ["exact"],
             "code": ["exact"],
             "name": ["exact"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
@@ -38,13 +38,13 @@ class ContributionPlanGQLType(DjangoObjectType):
         exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
-            "uuid": ["exact"],
+            #"uuid": ["exact"],
             "version": ["exact"],
-            "active": ["exact"],
+            #"active": ["exact"],
             "code": ["exact"],
             "benefit_plan": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
-            "amendment": ["exact", "lt", "lte", "gt", "gte"],
+            #"amendment": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
             "date_updated": ["exact", "lt", "lte", "gt", "gte"],
             "user_created": ["exact"],
@@ -67,7 +67,7 @@ class ContributionPlanBundleDetailsGQLType(DjangoObjectType):
         exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
-            "uuid": ["exact"],
+            #"uuid": ["exact"],
             "version": ["exact"],
             **prefix_filterset("contribution_plan_bundle__",
                                ContributionPlanBundleGQLType._meta.filter_fields),
@@ -79,7 +79,7 @@ class ContributionPlanBundleDetailsGQLType(DjangoObjectType):
             "user_updated": ["exact"],
             "date_valid_from": ["exact", "lt", "lte", "gt", "gte"],
             "date_valid_to": ["exact", "lt", "lte", "gt", "gte"],
-            "active": ["exact"]
+            #"active": ["exact"]
         }
 
         connection_class = ExtendedConnection
