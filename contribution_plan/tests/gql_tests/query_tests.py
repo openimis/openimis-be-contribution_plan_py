@@ -1,5 +1,6 @@
 import datetime
 import numbers
+import base64
 from unittest import TestCase, mock
 from uuid import UUID
 
@@ -23,7 +24,7 @@ class QueryTest(TestCase):
     def setUpClass(cls):
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan!'})
-        cls.test_contribution_plan_bundle.save()
+        #cls.test_contribution_plan_bundle.save()
         cls.test_contribution_plan = create_test_contribution_plan()
         cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
 
@@ -35,36 +36,39 @@ class QueryTest(TestCase):
         cls.graph_client = Client(cls.schema)
 
     def test_find_contribution_plan_bundle_existing(self):
-        uuid = self.test_contribution_plan_bundle.uuid
-        result = self.find_by_uuid_query("contributionPlanBundle", uuid)
-        self.assertEqual(UUID(result[0]['node']['uuid']), uuid)
+        id = self.test_contribution_plan_bundle.id
+        result = self.find_by_id_query("contributionPlanBundle", id)
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        self.assertEqual(UUID(converted_id), id)
 
     def test_find_contribution_plan_existing(self):
-        uuid = self.test_contribution_plan.uuid
-        result = self.find_by_uuid_query("contributionPlan", uuid)
-        self.assertEqual(UUID(result[0]['node']['uuid']), uuid)
+        id = self.test_contribution_plan.id
+        result = self.find_by_id_query("contributionPlan", id)
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        self.assertEqual(UUID(converted_id), id)
 
     def test_find_contribution_plan_details_existing(self):
-        uuid = self.test_contribution_plan_details.uuid
-        result = self.find_by_uuid_query("contributionPlanBundleDetails", uuid)
-        self.assertEqual(UUID(result[0]['node']['uuid']), uuid)
+        id = self.test_contribution_plan_details.id
+        result = self.find_by_id_query("contributionPlanBundleDetails", id)
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        self.assertEqual(UUID(converted_id), id)
 
     def test_find_contribution_plan_bundle_by_params(self):
         expected = self.test_contribution_plan_bundle
-        params = {'version': expected.version, 'active': expected.active, 'code': expected.code,
-                  'name': expected.name, 'dateCreated': expected.date_created}
+        params = {'version': expected.version, 'isDeleted': True if expected.is_deleted else False, 'code': expected.code,
+                  'name': expected.name}
         result = self.find_by_exact_attributes_query("contributionPlanBundle", params)
-        self.assertDictEqual()
+        self.assertDictEqual(result[0]['node'], params)
 
     def test_find_contribution_plan_bundle_existing_anonymous_user(self):
-        result_cpb = self.find_by_uuid_query("contributionPlanBundle",
-                                         self.test_contribution_plan_bundle.uuid,
+        result_cpb = self.find_by_id_query("contributionPlanBundle",
+                                         self.test_contribution_plan_bundle.id,
                                          context=self.AnonymousUserContext())
-        result_cp = self.find_by_uuid_query("contributionPlan",
-                                         self.test_contribution_plan.uuid,
+        result_cp = self.find_by_id_query("contributionPlan",
+                                         self.test_contribution_plan.id,
                                          context=self.AnonymousUserContext())
-        result_cpbd = self.find_by_uuid_query("contributionPlanBundleDetails",
-                                         self.test_contribution_plan_details.uuid,
+        result_cpbd = self.find_by_id_query("contributionPlanBundleDetails",
+                                         self.test_contribution_plan_details.id,
                                          context=self.AnonymousUserContext())
 
         self.assertEqual(len(result_cp), 0)
@@ -72,18 +76,18 @@ class QueryTest(TestCase):
         self.assertEqual(len(result_cpbd), 0)
 
     def test_find_contribution_plan_details_by_contribution(self):
-        details_contribution_bundle_uuid = self.test_contribution_plan_details.contribution_plan_bundle.uuid
-        details_contribution_plan_uuid = self.test_contribution_plan_details.contribution_plan.uuid
-        uuid = self.test_contribution_plan_details.uuid
+        details_contribution_bundle_id = self.test_contribution_plan_details.contribution_plan_bundle.id
+        details_contribution_plan_id = self.test_contribution_plan_details.contribution_plan.id
+        id = self.test_contribution_plan_details.id
         query = F'''
         {{
             contributionPlanBundleDetails(
-                contributionPlan_Uuid:"{details_contribution_plan_uuid}",
-                contributionPlanBundle_Uuid:"{details_contribution_bundle_uuid}") {{
+                contributionPlan_Id:"{details_contribution_plan_id}",
+                contributionPlanBundle_Id:"{details_contribution_bundle_id}") {{
                 totalCount
                 edges {{
                   node {{
-                    uuid
+                    id
                   }}
                   cursor
                 }}
@@ -92,16 +96,17 @@ class QueryTest(TestCase):
         '''
         query_result = self.execute_query(query)
         result = query_result['contributionPlanBundleDetails']['edges'][0]['node']
-        self.assertEqual(UUID(result['uuid']), uuid)
+        converted_id = base64.b64decode(result['id']).decode('utf-8').split(':')[1]
+        self.assertEqual(UUID(converted_id), id)
 
-    def find_by_uuid_query(self, query_type, uuid, context=None):
+    def find_by_id_query(self, query_type, id, context=None):
         query = F'''
         {{
-            {query_type}(uuid:"{uuid}") {{
+            {query_type}(id:"{id}") {{
                 totalCount
                 edges {{
                   node {{
-                    uuid
+                    id
                   }}
                   cursor
                 }}
@@ -113,7 +118,7 @@ class QueryTest(TestCase):
         records = query_result[query_type]['edges']
 
         if len(records) > 1:
-            raise ValueError(F"Ambiguous uuid {uuid} for query {query_type}")
+            raise ValueError(F"Ambiguous id {id} for query {query_type}")
 
         return records
 
@@ -132,7 +137,6 @@ class QueryTest(TestCase):
           }}
         }}
         '''
-        print(query)
         query_result = self.execute_query(query, context=context)
         records = query_result[query_type]['edges']
         return records
@@ -142,7 +146,6 @@ class QueryTest(TestCase):
             context = self.BaseTestContext()
 
         query_result = self.graph_client.execute(query, context=context)
-        print(query_result)
         query_data = query_result['data']
         return query_data
 

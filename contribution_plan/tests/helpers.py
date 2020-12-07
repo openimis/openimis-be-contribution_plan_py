@@ -6,6 +6,7 @@ from datetime import date
 
 from core.models import InteractiveUser, User
 from product.test_helpers import create_test_product
+from calculation.tests.helpers_tests import create_test_calculation_rules
 
 
 def create_test_contribution_plan_bundle(custom_props={}):
@@ -24,9 +25,12 @@ def create_test_contribution_plan_bundle(custom_props={}):
     return contribution_plan_bundle
 
 
-def create_test_contribution_plan(product=None, custom_props={}):
+def create_test_contribution_plan(product=None, calculation=None, custom_props={}):
     if not product:
         product = create_test_product("PlanCode")
+
+    if not calculation:
+        calculation = create_test_calculation_rules()
 
     user = __get_or_create_simple_contribution_plan_user()
 
@@ -36,6 +40,7 @@ def create_test_contribution_plan(product=None, custom_props={}):
         'name': "Contribution Plan Name",
         'benefit_plan': product,
         'periodicity': 12,
+        'calculation': calculation,
         'json_ext': json.dumps("{}"),
         **custom_props
     }
