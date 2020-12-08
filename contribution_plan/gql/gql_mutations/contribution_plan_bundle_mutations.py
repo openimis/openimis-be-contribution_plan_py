@@ -33,7 +33,7 @@ class DeleteContributionPlanBundleMutation(BaseHistoryModelDeleteMutationMixin, 
         pass
 
 
-class ReplaceContributionPlanMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
+class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
