@@ -7,7 +7,7 @@ from contribution_plan.gql.gql_mutations import ContributionPlanBundleDetailsInp
 from contribution_plan.models import ContributionPlanBundleDetails
 
 
-class CreateContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModelCreateMutationMixin):
+class CreateContributionPlanBundleDetailsMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
@@ -16,7 +16,7 @@ class CreateContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModel
         pass
 
 
-class UpdateContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModelUpdateMutationMixin):
+class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
@@ -25,7 +25,7 @@ class UpdateContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModel
         pass
 
 
-class DeleteContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModelDeleteMutationMixin):
+class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
@@ -34,7 +34,7 @@ class DeleteContributionPlanBundleDetailsMutation(BaseMutation, BaseHistoryModel
         pass
 
 
-class ReplaceContributionPlanMutation(BaseReplaceMutation, BaseHistoryModelReplaceMutationMixin):
+class ReplaceContributionPlanMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails

@@ -6,7 +6,7 @@ from contribution_plan.gql.gql_mutations import ContributionPlanInputType, Contr
 from contribution_plan.models import ContributionPlan
 
 
-class CreateContributionPlanMutation(BaseMutation, BaseHistoryModelCreateMutationMixin):
+class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlan
@@ -15,7 +15,7 @@ class CreateContributionPlanMutation(BaseMutation, BaseHistoryModelCreateMutatio
         pass
 
 
-class UpdateContributionPlanMutation(BaseMutation, BaseHistoryModelUpdateMutationMixin):
+class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlan
@@ -24,7 +24,7 @@ class UpdateContributionPlanMutation(BaseMutation, BaseHistoryModelUpdateMutatio
         pass
 
 
-class DeleteContributionPlanMutation(BaseDeleteMutation, BaseHistoryModelDeleteMutationMixin):
+class DeleteContributionPlanMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
     _mutation_class = "ContributionPlanMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlan
@@ -33,7 +33,7 @@ class DeleteContributionPlanMutation(BaseDeleteMutation, BaseHistoryModelDeleteM
         pass
 
 
-class ReplaceContributionPlanMutation(BaseReplaceMutation, BaseHistoryModelReplaceMutationMixin):
+class ReplaceContributionPlanMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlan
