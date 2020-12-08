@@ -25,7 +25,7 @@ class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutation
         pass
 
 
-class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutationMixin, BaseMutation):
+class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
