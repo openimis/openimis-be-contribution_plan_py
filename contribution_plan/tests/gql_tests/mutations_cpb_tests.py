@@ -11,7 +11,7 @@ from graphene import Schema
 from graphene.test import Client
 
 
-class MutationTest(TestCase):
+class MutationTestContributionPlanBundle(TestCase):
 
     class BaseTestContext:
         user = User.objects.get(username="admin")
@@ -23,8 +23,6 @@ class MutationTest(TestCase):
     def setUpClass(cls):
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
-        cls.test_contribution_plan = create_test_contribution_plan()
-        cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
 
         cls.schema = Schema(
             query=contribution_plan_schema.Query,
@@ -57,17 +55,19 @@ class MutationTest(TestCase):
         self.add_mutation("createContributionPlanBundle", input_param)
         result = self.find_by_exact_attributes_query("contributionPlanBundle", input_param)["edges"]
         self.assertEqual(
-            ( "XYZ test date xyz - "+str(time_stamp),
-              "XYZ DT",
-              1,
-              "2020-12-20T00:00:00",
-              "2020-12-20T00:00:00"
+            (
+                "XYZ test date xyz - "+str(time_stamp),
+                "XYZ DT",
+                1,
+                "2020-12-20T00:00:00",
+                "2020-12-20T00:00:00"
             ),
-            ( result[0]['node']['name'],
-              result[0]['node']['code'],
-              result[0]['node']['version'],
-              result[0]['node']['dateValidFrom'],
-              result[0]['node']['dateValidTo']
+            (
+                result[0]['node']['name'],
+                result[0]['node']['code'],
+                result[0]['node']['version'],
+                result[0]['node']['dateValidFrom'],
+                result[0]['node']['dateValidTo']
             )
         )
 
@@ -194,7 +194,7 @@ class MutationTest(TestCase):
         result_mutation = self.add_mutation("updateContributionPlanBundle", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
 
-    def test_contribution_plan_bundle_update_replace(self):
+    def test_contribution_plan_bundle_replace(self):
         time_stamp = datetime.datetime.now()
         input_param = {
             "code": "XYZ",
@@ -211,21 +211,23 @@ class MutationTest(TestCase):
         result_newly_created = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": result_replaced[0]["node"]["replacementUuid"]})["edges"]
         converted_id = base64.b64decode(result_newly_created[0]['node']['id']).decode('utf-8').split(':')[1]
         self.assertEqual(
-            ( True,
-              2,
-              True,
-              result_replaced[0]['node']['replacementUuid'],
-              1
+            (
+                True,
+                2,
+                True,
+                result_replaced[0]['node']['replacementUuid'],
+                1
             ),
-            ( result_replaced[0]['node']['replacementUuid'] is not None,
-              result_replaced[0]['node']['version'],
-              result_replaced[0]['node']['dateValidFrom'] is not None,
-              converted_id,
-              result_newly_created[0]['node']['version']
+            (
+                result_replaced[0]['node']['replacementUuid'] is not None,
+                result_replaced[0]['node']['version'],
+                result_replaced[0]['node']['dateValidFrom'] is not None,
+                converted_id,
+                result_newly_created[0]['node']['version']
             )
         )
 
-    def test_contribution_plan_bundle_update_replace_twice(self):
+    def test_contribution_plan_bundle_replace_twice(self):
         time_stamp = datetime.datetime.now()
 
         input_param = {
@@ -257,17 +259,19 @@ class MutationTest(TestCase):
         converted_id2 = base64.b64decode(result_newly_created2[0]['node']['id']).decode('utf-8').split(':')[1]
 
         self.assertEqual(
-            ( True,
-              2,
-              True,
-              result_replaced2[0]['node']['replacementUuid'],
-              1
+            (
+                True,
+                2,
+                True,
+                result_replaced2[0]['node']['replacementUuid'],
+                1
             ),
-            ( result_replaced2[0]['node']['replacementUuid'] is not None,
-              result_replaced2[0]['node']['version'],
-              result_replaced2[0]['node']['dateValidFrom'] is not None,
-              converted_id2,
-              result_newly_created2[0]['node']['version']
+            (
+                result_replaced2[0]['node']['replacementUuid'] is not None,
+                result_replaced2[0]['node']['version'],
+                result_replaced2[0]['node']['dateValidFrom'] is not None,
+                converted_id2,
+                result_newly_created2[0]['node']['version']
             )
         )
 

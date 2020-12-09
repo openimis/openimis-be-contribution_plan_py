@@ -39,6 +39,7 @@ class ContributionPlanGQLType(DjangoObjectType):
             "id": ["exact"],
             "version": ["exact"],
             "code": ["exact"],
+            "name": ["exact"],
             "benefit_plan": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
