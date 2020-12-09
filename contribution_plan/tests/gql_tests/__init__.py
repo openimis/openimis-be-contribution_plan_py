@@ -1,2 +1,2 @@
 from .query_tests import *
-from .mutation_tests import *
+from .mutations_cpb_tests import *
