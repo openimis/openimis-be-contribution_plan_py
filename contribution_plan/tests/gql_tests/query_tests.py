@@ -24,7 +24,6 @@ class QueryTest(TestCase):
     def setUpClass(cls):
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan!'})
-        #cls.test_contribution_plan_bundle.save()
         cls.test_contribution_plan = create_test_contribution_plan()
         cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
 
@@ -55,8 +54,12 @@ class QueryTest(TestCase):
 
     def test_find_contribution_plan_bundle_by_params(self):
         expected = self.test_contribution_plan_bundle
-        params = {'version': expected.version, 'isDeleted': True if expected.is_deleted else False, 'code': expected.code,
-                  'name': expected.name}
+        params = {
+            'version': expected.version,
+            'isDeleted': True if expected.is_deleted else False,
+            'code': expected.code,
+            'name': expected.name,
+        }
         result = self.find_by_exact_attributes_query("contributionPlanBundle", params)
         self.assertDictEqual(result[0]['node'], params)
 
