@@ -4,11 +4,11 @@ from contribution_plan.gql import ContributionPlanBundleGQLType, ContributionPla
     ContributionPlanBundleDetailsGQLType
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
-    DeleteContributionPlanBundleDetailsMutation
+    DeleteContributionPlanBundleDetailsMutation, ReplaceContributionPlanBundleDetailsMutation
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_mutations import CreateContributionPlanBundleMutation, \
-    UpdateContributionPlanBundleMutation, DeleteContributionPlanBundleMutation
+    UpdateContributionPlanBundleMutation, DeleteContributionPlanBundleMutation, ReplaceContributionPlanBundleMutation
 from contribution_plan.gql.gql_mutations.contribution_plan_mutations import CreateContributionPlanMutation, \
-    UpdateContributionPlanMutation, DeleteContributionPlanMutation
+    UpdateContributionPlanMutation, DeleteContributionPlanMutation, ReplaceContributionPlanMutation
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
 from core.schema import OrderedDjangoFilterConnectionField
 
@@ -54,3 +54,7 @@ class Mutation(graphene.ObjectType):
     delete_contribution_plan_bundle = DeleteContributionPlanBundleMutation.Field()
     delete_contribution_plan = DeleteContributionPlanMutation.Field()
     delete_contribution_plan_bundle_details = DeleteContributionPlanBundleDetailsMutation.Field()
+
+    replace_contribution_plan_bundle = ReplaceContributionPlanBundleMutation.Field()
+    replace_contribution_plan = ReplaceContributionPlanMutation.Field()
+    replace_contribution_plan_bundle_details = ReplaceContributionPlanBundleDetailsMutation.Field()

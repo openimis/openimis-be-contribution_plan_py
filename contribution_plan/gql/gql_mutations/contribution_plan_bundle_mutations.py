@@ -1,11 +1,12 @@
-from core.gql.gql_mutations import DeleteInputType
-from core.gql.gql_mutations.base_mutation import BaseDeleteMutation, BaseDeleteMutationMixin, \
-    BaseUpdateMutationMixin, BaseMutation, BaseCreateMutationMixin
-from contribution_plan.gql.gql_mutations import ContributionPlanBundleInputType
+from core.gql.gql_mutations import DeleteInputType, ReplaceInputType
+from core.gql.gql_mutations.base_mutation import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
+    BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
+    BaseHistoryModelDeleteMutationMixin, BaseHistoryModelReplaceMutationMixin
+from contribution_plan.gql.gql_mutations import ContributionPlanBundleInputType, ContributionPlanBundleUpdateInputType
 from contribution_plan.models import ContributionPlanBundle
 
 
-class CreateContributionPlanBundleMutation(BaseMutation, BaseCreateMutationMixin):
+class CreateContributionPlanBundleMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
@@ -14,7 +15,16 @@ class CreateContributionPlanBundleMutation(BaseMutation, BaseCreateMutationMixin
         pass
 
 
-class DeleteContributionPlanBundleMutation(BaseDeleteMutation, BaseDeleteMutationMixin):
+class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
+    _mutation_class = "ContributionPlanBundleMutation"
+    _mutation_module = "contribution_plan"
+    _model = ContributionPlanBundle
+
+    class Input(ContributionPlanBundleUpdateInputType):
+        pass
+
+
+class DeleteContributionPlanBundleMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
@@ -23,10 +33,10 @@ class DeleteContributionPlanBundleMutation(BaseDeleteMutation, BaseDeleteMutatio
         pass
 
 
-class UpdateContributionPlanBundleMutation(BaseMutation, BaseUpdateMutationMixin):
+class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
 
-    class Input(ContributionPlanBundleInputType):
+    class Input(ReplaceInputType):
         pass

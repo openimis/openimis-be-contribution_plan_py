@@ -8,7 +8,6 @@ class ContributionPlanBundleGQLType(DjangoObjectType):
 
     class Meta:
         model = ContributionPlanBundle
-        exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
             "id": ["exact"],
@@ -35,12 +34,12 @@ class ContributionPlanGQLType(DjangoObjectType):
 
     class Meta:
         model = ContributionPlan
-        exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
             "id": ["exact"],
             "version": ["exact"],
             "code": ["exact"],
+            "name": ["exact"],
             "benefit_plan": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
@@ -63,7 +62,6 @@ class ContributionPlanBundleDetailsGQLType(DjangoObjectType):
 
     class Meta:
         model = ContributionPlanBundleDetails
-        exclude_fields = ('row_id',)
         interfaces = (graphene.relay.Node,)
         filter_fields = {
             "id": ["exact"],
