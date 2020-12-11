@@ -205,6 +205,7 @@ class MutationTestContributionPlanBundle(TestCase):
         id_record = f"{base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]}"
         input_param = {
             "uuid": id_record,
+            "dateValidFrom": "2021-01-01"
         }
         self.add_mutation("replaceContributionPlanBundle", input_param)
         result_replaced = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": id_record})["edges"]
@@ -241,6 +242,7 @@ class MutationTestContributionPlanBundle(TestCase):
 
         input_param = {
             "uuid": id_record,
+            "dateValidFrom": "2021-01-01"
         }
 
         self.add_mutation("replaceContributionPlanBundle", input_param)
@@ -251,6 +253,7 @@ class MutationTestContributionPlanBundle(TestCase):
 
         input_param = {
             "uuid": converted_id,
+            "dateValidFrom": "2021-01-01"
         }
         self.add_mutation("replaceContributionPlanBundle", input_param)
         result_replaced2 = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": converted_id})["edges"]

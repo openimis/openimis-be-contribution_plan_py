@@ -1,8 +1,9 @@
-from core.gql.gql_mutations import DeleteInputType, ReplaceInputType
+from core.gql.gql_mutations import DeleteInputType
 from core.gql.gql_mutations.base_mutation import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
     BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
     BaseHistoryModelDeleteMutationMixin, BaseHistoryModelReplaceMutationMixin
-from contribution_plan.gql.gql_mutations import ContributionPlanInputType, ContributionPlanUpdateInputType
+from contribution_plan.gql.gql_mutations import ContributionPlanInputType, ContributionPlanUpdateInputType, \
+    ContributionPlanReplaceInputType
 from contribution_plan.models import ContributionPlan
 
 
@@ -38,5 +39,5 @@ class ReplaceContributionPlanMutation(BaseHistoryModelReplaceMutationMixin, Base
     _mutation_module = "contribution_plan"
     _model = ContributionPlan
 
-    class Input(ReplaceInputType):
+    class Input(ContributionPlanReplaceInputType):
         pass

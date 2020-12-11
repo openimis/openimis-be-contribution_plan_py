@@ -1,5 +1,7 @@
 import graphene
+
 from core.schema import OpenIMISMutation, TinyInt
+from core.gql.gql_mutations import ReplaceInputType
 
 
 class ContributionPlanBundleInputType(OpenIMISMutation.Input):
@@ -16,6 +18,12 @@ class ContributionPlanBundleUpdateInputType(OpenIMISMutation.Input):
     name = graphene.String(required=False, max_length=255)
     json_ext = graphene.types.json.JSONString(required=False)
     date_valid_from = graphene.Date(required=False)
+    date_valid_to = graphene.Date(required=False)
+
+
+class ContributionPlanBundleReplaceInputType(ReplaceInputType):
+    name = graphene.String(required=False, max_length=255)
+    date_valid_from = graphene.Date(required=True)
     date_valid_to = graphene.Date(required=False)
 
 
@@ -43,12 +51,21 @@ class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
     json_ext = graphene.types.json.JSONString(required=False)
 
 
+class ContributionPlanReplaceInputType(ReplaceInputType):
+    name = graphene.String(required=False, max_lenght=255)
+    calculation_id = graphene.UUID(required=False)
+    benefit_plan_id = graphene.Int(required=False)
+    periodicity = graphene.Int(required=False)
+    date_valid_from = graphene.Date(required=True)
+    date_valid_to = graphene.Date(required=False)
+
+
 class ContributionPlanBundleDetailsInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=False)
     contribution_plan_bundle_id = graphene.UUID(required=True)
     contribution_plan_id = graphene.UUID(required=True)
-    date_valid_from = graphene.DateTime(required=False)
-    date_valid_to = graphene.DateTime(required=False)
+    date_valid_from = graphene.Date(required=False)
+    date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
 
 
@@ -56,6 +73,12 @@ class ContributionPlanBundleDetailsUpdateInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=True)
     contribution_plan_bundle_id = graphene.UUID(required=False)
     contribution_plan_id = graphene.UUID(required=False)
-    date_valid_from = graphene.DateTime(required=False)
-    date_valid_to = graphene.DateTime(required=False)
+    date_valid_from = graphene.Date(required=False)
+    date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
+
+
+class ContributionPlanBundleDetailsReplaceInputType(ReplaceInputType):
+    contribution_plan_id = graphene.UUID(required=False)
+    date_valid_from = graphene.Date(required=True)
+    date_valid_to = graphene.Date(required=False)
