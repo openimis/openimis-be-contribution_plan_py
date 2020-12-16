@@ -1,4 +1,28 @@
 import core
+import json
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.exceptions import PermissionDenied
+from django.db import connection, transaction
+from django.contrib.auth.models import AnonymousUser
+from django.core import serializers
+from django.forms.models import model_to_dict
+from contribution_plan.models import ContributionPlan as ContributionPlanModel, ContributionPlanBundle as ContributionPlanBundleModel, \
+    ContributionPlanBundleDetails as ContributionPlanBundleDetailsModel
+
+
+def check_authentication(function):
+    def wrapper(self, *args, **kwargs):
+        if type(self.user) is AnonymousUser or not self.user.id:
+            return {
+                "success": False,
+                "message": "Authentication required",
+                "detail": "PermissionDenied",
+            }
+        else:
+            result = function(self, *args, **kwargs)
+            return result
+    return wrapper
 
 
 @core.comparable
