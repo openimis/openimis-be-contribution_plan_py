@@ -8,6 +8,7 @@ class ContributionPlanBundleInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=False)
     code = graphene.String(required=True, max_length=32)
     name = graphene.String(required=False, max_length=255)
+    periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=False)
     date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
@@ -16,6 +17,7 @@ class ContributionPlanBundleInputType(OpenIMISMutation.Input):
 class ContributionPlanBundleUpdateInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=True)
     name = graphene.String(required=False, max_length=255)
+    periodicity = graphene.Int(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
     date_valid_from = graphene.Date(required=False)
     date_valid_to = graphene.Date(required=False)
@@ -23,6 +25,7 @@ class ContributionPlanBundleUpdateInputType(OpenIMISMutation.Input):
 
 class ContributionPlanBundleReplaceInputType(ReplaceInputType):
     name = graphene.String(required=False, max_length=255)
+    periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=True)
     date_valid_to = graphene.Date(required=False)
 
