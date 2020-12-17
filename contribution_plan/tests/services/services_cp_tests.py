@@ -18,7 +18,7 @@ class ServiceTestContributionPlan(TestCase):
     def setUpClass(cls):
         cls.user = User.objects.get(username="admin")
         cls.contribution_plan_service = ContributionPlanService(cls.user)
-        #cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)
+        cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)
         #cls.contribution_plan_bundle_details_service = ContributionPlanBundleDetailsService(cls.user)
 
     def test_contribution_plan_create(self):
@@ -57,6 +57,30 @@ class ServiceTestContributionPlan(TestCase):
                  response['data']['periodicity'],
                  response['data']['benefit_plan'],
                  response['data']['calculation'],
+            )
+        )
+
+    def test_contribution_plan_create_without_obligatory_field(self):
+        product = create_test_product("PCODE")
+        calculation = create_test_calculation_rules()
+
+        contribution_plan = {
+            'code': "CP SERVICE",
+            'name': "Contribution Plan Name Service",
+            'benefit_plan_id': product.id,
+            'calculation_id': str(calculation.id),
+            'json_ext': json.dumps("{}"),
+        }
+
+        response = self.contribution_plan_service.create(contribution_plan)
+        self.assertEqual(
+            (
+                False,
+                "Failed to create ContributionPlan",
+            ),
+            (
+                response['success'],
+                response['message'],
             )
         )
 
@@ -264,10 +288,10 @@ class ServiceTestContributionPlan(TestCase):
         )
 
     def test_contribution_plan_update_without_id(self):
-        policy_holder = {
+        contribution_plan = {
             'periodicity': 6,
         }
-        response = self.contribution_plan_service.update(policy_holder)
+        response = self.contribution_plan_service.update(contribution_plan)
         self.assertEqual(
             (
                 False,
@@ -513,5 +537,145 @@ class ServiceTestContributionPlan(TestCase):
                 contribution_plan_new_replaced_object2.periodicity,
                 contribution_plan_new_replaced_object2.benefit_plan.id,
                 contribution_plan_new_replaced_object2.version
+            )
+        )
+
+    def test_contribution_plan_bundle_create(self):
+        contribution_plan_bundle = {
+            'code': "CPB1",
+            'name': "CPB test",
+            #'periodicity': 6,
+        }
+
+        response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
+        self.assertEqual(
+            (
+                True,
+                "Ok",
+                "",
+                "CPB1",
+                "CPB test",
+                1,
+                #6,
+            ),
+            (
+                response['success'],
+                response['message'],
+                response['detail'],
+                response['data']['code'],
+                response['data']['name'],
+                response['data']['version'],
+                #response['data']['periodicity'],
+            )
+        )
+
+    def test_contribution_plan_bundle_create_update(self):
+        contribution_plan_bundle = {
+            'code': "CPB1",
+            'name': "CPB test",
+            # 'periodicity': 6,
+        }
+
+        response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
+        contribution_plan_bundle_object = ContributionPlanBundle.objects.get(id=response['data']['id'])
+        contribution_plan_bundle_to_update = {
+            'id': str(contribution_plan_bundle_object.id),
+            'name': "name updated",
+        }
+        response = self.contribution_plan_bundle_service.update(contribution_plan_bundle_to_update)
+        self.assertEqual(
+            (
+                True,
+                "Ok",
+                "",
+                "name updated",
+                2,
+            ),
+            (
+                response['success'],
+                response['message'],
+                response['detail'],
+                response['data']['name'],
+                response['data']['version'],
+            )
+        )
+
+    def test_contribution_plan_bundle_update_without_changing_field(self):
+        contribution_plan_bundle = {
+            'code': "CPB1",
+            'name': "name not changed",
+            # 'periodicity': 6,
+        }
+
+        response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
+        contribution_plan_bundle_object = ContributionPlanBundle.objects.get(id=response['data']['id'])
+        contribution_plan_bundle_to_update = {
+            'id': str(contribution_plan_bundle_object.id),
+            'name': "name not changed",
+        }
+
+        response = self.contribution_plan_bundle_service.update(contribution_plan_bundle_to_update)
+        self.assertEqual(
+            (
+                False,
+                "Failed to update ContributionPlanBundle",
+                "['Record has not be updated - there are no changes in fields']",
+            ),
+            (
+                response['success'],
+                response['message'],
+                response['detail']
+            )
+        )
+
+    def test_contribution_plan_bundle_update_without_id(self):
+        contribution_plan_bundle = {
+            'name': "XXXXXX",
+        }
+        response = self.contribution_plan_bundle_service.update(contribution_plan_bundle)
+        self.assertEqual(
+            (
+                False,
+                "Failed to update ContributionPlanBundle",
+            ),
+            (
+                response['success'],
+                response['message'],
+            )
+        )
+
+    def test_contribution_plan_bundle_replace(self):
+        contribution_plan_bundle = {
+            'code': "CPBRep",
+            'name': "replacement",
+            # 'periodicity': 6,
+        }
+
+        response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
+        contribution_plan_bundle_object = ContributionPlanBundle.objects.get(id=response['data']['id'])
+        print(contribution_plan_bundle_object.id)
+
+        contribution_plan_bundle_to_replace = {
+            'uuid': str(contribution_plan_bundle_object.id),
+            "name": "Rep XX",
+            #'periodicity': 3,
+        }
+
+        response = self.contribution_plan_bundle_service.replace(contribution_plan_bundle_to_replace)
+        contribution_plan_bundle_new_replaced_object = ContributionPlanBundle.objects.get(id=response['uuid_new_object'])
+        self.assertEqual(
+            (
+                True,
+                "Ok",
+                "",
+                response["old_object"]["replacement_uuid"],
+                "Rep XX",
+            ),
+            (
+                response['success'],
+                response['message'],
+                response['detail'],
+                response["uuid_new_object"],
+                contribution_plan_bundle_new_replaced_object.name
             )
         )

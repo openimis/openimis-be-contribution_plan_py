@@ -151,7 +151,7 @@ class ContributionPlanBundle(object):
     @check_authentication
     def replace(self, contribution_plan_bundle):
         try:
-            cpb_to_replace = ContributionPlanModel.objects.filter(id=contribution_plan_bundle['uuid']).first()
+            cpb_to_replace = ContributionPlanBundleModel.objects.filter(id=contribution_plan_bundle['uuid']).first()
             cpb_to_replace.replace_object(data=contribution_plan_bundle, username=self.user.username)
             uuid_string = str(cpb_to_replace.id)
             dict_representation = model_to_dict(cpb_to_replace)
