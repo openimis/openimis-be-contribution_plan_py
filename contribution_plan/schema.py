@@ -1,6 +1,6 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
-from contribution_plan.gql import ContributionPlanBundleGQLType, ContributionPlanGQLType, \
+from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
@@ -14,13 +14,13 @@ from core.schema import OrderedDjangoFilterConnectionField
 
 
 class Query(graphene.ObjectType):
-    contribution_plan_bundle = OrderedDjangoFilterConnectionField(
-        ContributionPlanBundleGQLType,
+    contribution_plan = OrderedDjangoFilterConnectionField(
+        ContributionPlanGQLType,
         orderBy=graphene.List(of_type=graphene.String),
     )
 
-    contribution_plan = OrderedDjangoFilterConnectionField(
-        ContributionPlanGQLType,
+    contribution_plan_bundle = OrderedDjangoFilterConnectionField(
+        ContributionPlanBundleGQLType,
         orderBy=graphene.List(of_type=graphene.String),
     )
 
@@ -29,12 +29,12 @@ class Query(graphene.ObjectType):
         orderBy=graphene.List(of_type=graphene.String),
     )
 
-    def resolve_contribution_plan_bundle(self, info, **kwargs):
-        query = ContributionPlanBundle.objects
-        return gql_optimizer.query(query.all(), info)
-
     def resolve_contribution_plan(self, info, **kwargs):
         query = ContributionPlan.objects
+        return gql_optimizer.query(query.all(), info)
+
+    def resolve_contribution_plan_bundle(self, info, **kwargs):
+        query = ContributionPlanBundle.objects
         return gql_optimizer.query(query.all(), info)
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):

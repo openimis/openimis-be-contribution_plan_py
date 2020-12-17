@@ -18,6 +18,7 @@ class ContributionPlanBundleManager(models.Manager):
 class ContributionPlanBundle(core_models.HistoryBusinessModel):
     code = models.CharField(db_column='Code', max_length=255, null=False)
     name = models.CharField(db_column='Name', max_length=255, blank=True, null=True)
+    periodicity = models.IntegerField(db_column="Periodicity", blank=True, null=True)
 
     objects = ContributionPlanBundleManager()
 
