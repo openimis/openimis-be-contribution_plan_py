@@ -11,7 +11,6 @@ from contribution_plan.gql.gql_mutations.contribution_plan_mutations import Crea
     UpdateContributionPlanMutation, DeleteContributionPlanMutation, ReplaceContributionPlanMutation
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
 from core.schema import OrderedDjangoFilterConnectionField
-from core import prefix_filterset
 
 
 class Query(graphene.ObjectType):
