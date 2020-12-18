@@ -7,7 +7,8 @@ from contribution_plan.models import ContributionPlan, ContributionPlanBundle, C
 from calculation.models import CalculationRules
 from product.models import Product
 from core.models import User
-
+from contribution_plan.tests.helpers import create_test_contribution_plan, \
+    create_test_contribution_plan_bundle
 from product.test_helpers import create_test_product
 from calculation.tests.helpers_tests import create_test_calculation_rules
 
@@ -19,7 +20,7 @@ class ServiceTestContributionPlan(TestCase):
         cls.user = User.objects.get(username="admin")
         cls.contribution_plan_service = ContributionPlanService(cls.user)
         cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)
-        #cls.contribution_plan_bundle_details_service = ContributionPlanBundleDetailsService(cls.user)
+        cls.contribution_plan_bundle_details_service = ContributionPlanBundleDetailsService(cls.user)
 
     def test_contribution_plan_create(self):
         product = create_test_product("PCODE")
@@ -544,7 +545,7 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_bundle = {
             'code': "CPB1",
             'name': "CPB test",
-            #'periodicity': 6,
+            'periodicity': 6,
         }
 
         response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
@@ -556,7 +557,7 @@ class ServiceTestContributionPlan(TestCase):
                 "CPB1",
                 "CPB test",
                 1,
-                #6,
+                6,
             ),
             (
                 response['success'],
@@ -565,7 +566,7 @@ class ServiceTestContributionPlan(TestCase):
                 response['data']['code'],
                 response['data']['name'],
                 response['data']['version'],
-                #response['data']['periodicity'],
+                response['data']['periodicity'],
             )
         )
 
@@ -573,7 +574,7 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_bundle = {
             'code': "CPB1",
             'name': "CPB test",
-            # 'periodicity': 6,
+            'periodicity': 6,
         }
 
         response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
@@ -581,6 +582,7 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_bundle_to_update = {
             'id': str(contribution_plan_bundle_object.id),
             'name': "name updated",
+            'periodicity': 4,
         }
         response = self.contribution_plan_bundle_service.update(contribution_plan_bundle_to_update)
         self.assertEqual(
@@ -590,6 +592,7 @@ class ServiceTestContributionPlan(TestCase):
                 "",
                 "name updated",
                 2,
+                4,
             ),
             (
                 response['success'],
@@ -597,6 +600,7 @@ class ServiceTestContributionPlan(TestCase):
                 response['detail'],
                 response['data']['name'],
                 response['data']['version'],
+                response['data']['periodicity'],
             )
         )
 
@@ -604,7 +608,7 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_bundle = {
             'code': "CPB1",
             'name': "name not changed",
-            # 'periodicity': 6,
+            'periodicity': 6,
         }
 
         response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
@@ -648,17 +652,16 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_bundle = {
             'code': "CPBRep",
             'name': "replacement",
-            # 'periodicity': 6,
+            'periodicity': 6,
         }
 
         response = self.contribution_plan_bundle_service.create(contribution_plan_bundle)
         contribution_plan_bundle_object = ContributionPlanBundle.objects.get(id=response['data']['id'])
-        print(contribution_plan_bundle_object.id)
 
         contribution_plan_bundle_to_replace = {
             'uuid': str(contribution_plan_bundle_object.id),
             "name": "Rep XX",
-            #'periodicity': 3,
+            'periodicity': 3,
         }
 
         response = self.contribution_plan_bundle_service.replace(contribution_plan_bundle_to_replace)
@@ -670,12 +673,96 @@ class ServiceTestContributionPlan(TestCase):
                 "",
                 response["old_object"]["replacement_uuid"],
                 "Rep XX",
+                3
             ),
             (
                 response['success'],
                 response['message'],
                 response['detail'],
                 response["uuid_new_object"],
-                contribution_plan_bundle_new_replaced_object.name
+                contribution_plan_bundle_new_replaced_object.name,
+                contribution_plan_bundle_new_replaced_object.periodicity
+            )
+        )
+
+    def test_contribution_plan_bundle_details_create(self):
+        contribution_plan_bundle = create_test_contribution_plan_bundle()
+        contribution_plan = create_test_contribution_plan()
+
+        contribution_plan_bundle_details = {
+            'contribution_plan_bundle_id': str(contribution_plan_bundle.id),
+            'contribution_plan_id': str(contribution_plan.id),
+        }
+
+        response = self.contribution_plan_bundle_details_service.create(contribution_plan_bundle_details)
+        self.assertEqual(
+            (
+                 True,
+                 "Ok",
+                 "",
+                 1,
+                 str(contribution_plan.id),
+                 str(contribution_plan_bundle.id),
+            ),
+            (
+                 response['success'],
+                 response['message'],
+                 response['detail'],
+                 response['data']['version'],
+                 response['data']['contribution_plan'],
+                 response['data']['contribution_plan_bundle'],
+            )
+        )
+
+    def test_contribution_plan_bundle_details_update(self):
+        contribution_plan_bundle = create_test_contribution_plan_bundle()
+        contribution_plan = create_test_contribution_plan()
+
+        contribution_plan_bundle_details = {
+            'contribution_plan_bundle_id': str(contribution_plan_bundle.id),
+            'contribution_plan_id': str(contribution_plan.id),
+        }
+
+        response = self.contribution_plan_bundle_details_service.create(contribution_plan_bundle_details)
+        contribution_plan_bundle_details_object = ContributionPlanBundleDetails.objects.get(id=response['data']['id'])
+
+        product = create_test_product("PCODE")
+        calculation = create_test_calculation_rules()
+
+        contribution_plan = {
+            'code': "CP SERUPD",
+            'name': "CP for update",
+            'benefit_plan_id': str(product.id),
+            'periodicity': 6,
+            'calculation_id': str(calculation.id),
+            'json_ext': json.dumps("{}"),
+        }
+
+        response = self.contribution_plan_service.create(contribution_plan)
+        contribution_plan_object = ContributionPlan.objects.get(id=response['data']['id'])
+
+        contribution_plan_bundle_details_to_update = {
+            'id': str(contribution_plan_bundle_details_object.id),
+            'contribution_plan_id': str(contribution_plan_object.id),
+        }
+
+        response = self.contribution_plan_bundle_details_service.update(contribution_plan_bundle_details_to_update)
+
+        self.assertEqual(
+            (
+                 True,
+                 "Ok",
+                 "",
+                 2,
+                 str(contribution_plan_object.id),
+                 str(contribution_plan_bundle.id),
+            ),
+            (
+                 response['success'],
+                 response['message'],
+                 response['detail'],
+                 response['data']['version'],
+                 response['data']['contribution_plan'],
+                 response['data']['contribution_plan_bundle'],
             )
         )
