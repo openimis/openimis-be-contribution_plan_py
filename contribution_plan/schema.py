@@ -22,6 +22,8 @@ class Query(graphene.ObjectType):
     contribution_plan_bundle = OrderedDjangoFilterConnectionField(
         ContributionPlanBundleGQLType,
         orderBy=graphene.List(of_type=graphene.String),
+        calculation=graphene.UUID(),
+        insuranceProduct=graphene.Int(),
     )
 
     contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
@@ -35,6 +37,20 @@ class Query(graphene.ObjectType):
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
         query = ContributionPlanBundle.objects
+
+        calculation = kwargs.get('calculation', None)
+        insurance_product = kwargs.get('insuranceProduct', None)
+
+        if calculation:
+            query = query.filter(
+                contributionplanbundledetails__contribution_plan__calculation__id=str(calculation)
+            )
+
+        if insurance_product:
+            query = query.filter(
+                contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
+            )
+
         return gql_optimizer.query(query.all(), info)
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):
