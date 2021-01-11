@@ -23,7 +23,8 @@ setup(
     install_requires=[
         'django',
         'django-db-signals',
-        'djangorestframework'
+        'djangorestframework',
+        'openimis-be-calculation'
     ],
     classifiers=[
         'Environment :: Web Environment',
