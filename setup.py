@@ -24,6 +24,7 @@ setup(
         'django',
         'django-db-signals',
         'djangorestframework',
+        'openimis-be-product',
         'openimis-be-calculation'
     ],
     classifiers=[
