@@ -99,7 +99,7 @@ def on_contribution_plan_mutation(sender, **kwargs):
         impacted_contribution_plan = ContributionPlan.objects.get(uuid=uuid)
         ContributionPlanMutation.objects.create(
             contribution_plan=impacted_contribution_plan, mutation_id=kwargs['mutation_log_id'])
-    if "ContributionPlanBundle" in str(sender._mutation_class):
+    if "ContributionPlanBundleMutation" in str(sender._mutation_class):
         impacted_contribution_plan_bundle = ContributionPlanBundle.objects.get(uuid=uuid)
         ContributionPlanBundleMutation.objects.create(
             contribution_plan_bundle=impacted_contribution_plan_bundle, mutation_id=kwargs['mutation_log_id'])
