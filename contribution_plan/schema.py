@@ -14,6 +14,7 @@ from contribution_plan.gql.gql_mutations.contribution_plan_mutations import Crea
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
 from core.schema import OrderedDjangoFilterConnectionField
 from .models import ContributionPlanMutation, ContributionPlanBundleMutation
+from .apps import ContributionPlanConfig
 
 
 class Query(graphene.ObjectType):
@@ -35,10 +36,16 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_contribution_plan(self, info, **kwargs):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
+           raise PermissionError("Unauthorized")
+
         query = ContributionPlan.objects
         return gql_optimizer.query(query.all(), info)
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplanbundle_perms):
+           raise PermissionError("Unauthorized")
+
         query = ContributionPlanBundle.objects
 
         calculation = kwargs.get('calculation', None)
@@ -57,6 +64,11 @@ class Query(graphene.ObjectType):
         return gql_optimizer.query(query.all(), info)
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):
+        if not (info.context.user.has_perms(
+                ContributionPlanConfig.gql_query_contributionplanbundle_perms) and info.context.user.has_perms(
+                ContributionPlanConfig.gql_query_contributionplan_perms)):
+           raise PermissionError("Unauthorized")
+
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.all(), info)
 
@@ -83,11 +95,11 @@ def on_contribution_plan_mutation(sender, **kwargs):
     uuid = kwargs['data'].get('uuid', None)
     if not uuid:
         return []
-    if "ContributionPlan" in str(sender._mutation_class):
+    if "ContributionPlanMutation" in str(sender._mutation_class):
         impacted_contribution_plan = ContributionPlan.objects.get(uuid=uuid)
         ContributionPlanMutation.objects.create(
             contribution_plan=impacted_contribution_plan, mutation_id=kwargs['mutation_log_id'])
-    if "ContributionPlanBundle" in str(sender._mutation_class):
+    if "ContributionPlanBundleMutation" in str(sender._mutation_class):
         impacted_contribution_plan_bundle = ContributionPlanBundle.objects.get(uuid=uuid)
         ContributionPlanBundleMutation.objects.create(
             contribution_plan_bundle=impacted_contribution_plan_bundle, mutation_id=kwargs['mutation_log_id'])
