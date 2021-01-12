@@ -100,3 +100,25 @@ class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
 
     class Meta:
         db_table = 'tblContributionPlanBundleDetails'
+
+
+class ContributionPlanMutation(core_models.UUIDModel):
+    contribution_plan = models.ForeignKey(ContributionPlan, models.DO_NOTHING,
+                                 related_name='mutations')
+    mutation = models.ForeignKey(
+        core_models.MutationLog, models.DO_NOTHING, related_name='contribution_plan')
+
+    class Meta:
+        managed = True
+        db_table = "contribution_plan_ContributionPlanMutation"
+
+
+class ContributionPlanBundleMutation(core_models.UUIDModel):
+    contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, models.DO_NOTHING,
+                                 related_name='mutations')
+    mutation = models.ForeignKey(
+        core_models.MutationLog, models.DO_NOTHING, related_name='contribution_plan_bundle')
+
+    class Meta:
+        managed = True
+        db_table = "contribution_plan_bundle_ContributionPlanBundleMutation"
