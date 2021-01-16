@@ -1,5 +1,5 @@
 import graphene
-from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
+from .models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
 from core import ExtendedConnection, prefix_filterset
 from graphene_django import DjangoObjectType
 from product.schema import ProductGQLType
