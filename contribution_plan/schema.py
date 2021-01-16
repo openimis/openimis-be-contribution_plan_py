@@ -13,7 +13,7 @@ from .gql.gql_mutations.contribution_plan_mutations import CreateContributionPla
     UpdateContributionPlanMutation, DeleteContributionPlanMutation, ReplaceContributionPlanMutation
 from .models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails,\
      ContributionPlanMutation, ContributionPlanBundleMutation
-from .apps import ContributionPlanConfig
+
 
 
 class Query(graphene.ObjectType):
