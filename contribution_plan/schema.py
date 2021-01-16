@@ -1,19 +1,18 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
 
-from core.schema import signal_mutation_module_validate
-from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
+from core.schema import signal_mutation_module_validate, OrderedDjangoFilterConnectionField
+from .gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType
-from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
+from .gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
     DeleteContributionPlanBundleDetailsMutation, ReplaceContributionPlanBundleDetailsMutation
-from contribution_plan.gql.gql_mutations.contribution_plan_bundle_mutations import CreateContributionPlanBundleMutation, \
+from .gql.gql_mutations.contribution_plan_bundle_mutations import CreateContributionPlanBundleMutation, \
     UpdateContributionPlanBundleMutation, DeleteContributionPlanBundleMutation, ReplaceContributionPlanBundleMutation
-from contribution_plan.gql.gql_mutations.contribution_plan_mutations import CreateContributionPlanMutation, \
+from .gql.gql_mutations.contribution_plan_mutations import CreateContributionPlanMutation, \
     UpdateContributionPlanMutation, DeleteContributionPlanMutation, ReplaceContributionPlanMutation
-from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
-from core.schema import OrderedDjangoFilterConnectionField
-from .models import ContributionPlanMutation, ContributionPlanBundleMutation
+from .models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails,\
+     ContributionPlanMutation, ContributionPlanBundleMutation
 from .apps import ContributionPlanConfig
 
 
