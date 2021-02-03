@@ -19,4 +19,4 @@ def on_get_contribution_length_signal(sender, **kwargs):
     return length_contribution
 
 
-get_contribution_length_signal.connect(on_get_contribution_length_signal, dispatch_uid="on_contract_signal")
+get_contribution_length_signal.connect(on_get_contribution_length_signal, dispatch_uid="on_contribution_length")
