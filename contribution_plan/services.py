@@ -5,7 +5,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
 from contribution_plan.models import ContributionPlan as ContributionPlanModel, ContributionPlanBundle as ContributionPlanBundleModel, \
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsModel
-from .signals import get_contribution_length_signal
 
 
 def check_authentication(function):
@@ -222,12 +221,6 @@ class ContributionPlanBundleDetails(object):
             }
         except Exception as exc:
             return _output_exception(model_name="ContributionPlanBundleDetails", method="delete", exception=exc)
-
-
-def get_contribution_length(contribution_plan):
-    length = contribution_plan.periodicity
-    signal_result = get_contribution_length_signal.send(sender=ContributionPlanModel, contribution_plan=contribution_plan)[0][1]
-    return length
 
 
 def _output_exception(model_name, method, exception):

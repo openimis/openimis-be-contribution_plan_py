@@ -4,6 +4,7 @@ from core import models as core_models, fields
 from graphql import ResolveInfo
 from product.models import Product
 from calculation.models import CalculationRules
+from calculation.signals import get_contribution_length_signal
 
 
 class ContributionPlanBundleManager(models.Manager):
@@ -54,6 +55,11 @@ class ContributionPlan(core_models.HistoryBusinessModel):
     periodicity = models.IntegerField(db_column="Periodicity", null=False)
 
     objects = ContributionPlanManager()
+
+    def get_contribution_length(self, grace_period=None):
+        length = self.periodicity
+        signal_result = get_contribution_length_signal.send(sender=self.__class__,  instance=self, grace_period=grace_period)[0][1]
+        return signal_result if signal_result > 0 else length
 
     @classmethod
     def get_queryset(cls, queryset, user):
