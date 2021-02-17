@@ -55,7 +55,6 @@ class ContributionPlan(core_models.HistoryBusinessModel):
     code = models.CharField(db_column="Code", max_length=255, blank=True, null=True)
     name = models.CharField(db_column="Name", max_length=255, blank=True, null=True)
     calculation = models.UUIDField(db_column="calculationUUID", null=False)
-    #models.ForeignKey(CalculationRules, db_column="CalculationUUID", on_delete=models.deletion.DO_NOTHING)
     benefit_plan = models.ForeignKey(Product, db_column="BenefitPlanID", on_delete=models.deletion.DO_NOTHING)
     periodicity = models.IntegerField(db_column="Periodicity", null=False)
     length: int = None
