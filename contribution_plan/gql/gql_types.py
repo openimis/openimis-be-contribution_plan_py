@@ -16,7 +16,7 @@ class ContributionPlanGQLType(DjangoObjectType):
             "code": ["exact", "istartswith", "icontains", "iexact"],
             "name": ["exact", "istartswith", "icontains", "iexact"],
             **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
-            **prefix_filterset("calculation__", CalculationRulesGQLType._meta.filter_fields),
+            "calculation": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
             "date_updated": ["exact", "lt", "lte", "gt", "gte"],
