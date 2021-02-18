@@ -4,7 +4,6 @@ from core import models as core_models, fields
 from core.signals import Signal
 from graphql import ResolveInfo
 from product.models import Product
-from calculation.models import CalculationRules
 
 
 _get_contribution_length_signal_params = ["grace_period"]
