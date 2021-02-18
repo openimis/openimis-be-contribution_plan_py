@@ -31,6 +31,10 @@ class MutationTestContributionPlanBundle(TestCase):
 
         cls.graph_client = Client(cls.schema)
 
+    @classmethod
+    def tearDownClass(cls):
+        ContributionPlanBundle.objects.filter(id=cls.test_contribution_plan_bundle.id).delete()
+
     def test_contribution_plan_bundle_create(self):
         time_stamp = datetime.datetime.now()
         input_param = {
@@ -39,36 +43,14 @@ class MutationTestContributionPlanBundle(TestCase):
         }
         self.add_mutation("createContributionPlanBundle", input_param)
         result = self.find_by_exact_attributes_query("contributionPlanBundle", input_param)["edges"]
+
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        # tear down the test data
+        ContributionPlanBundle.objects.filter(id=f"{converted_id}").delete()
+
         self.assertEqual(
             ("XYZ test name xyz - "+str(time_stamp), "XYZ", 1),
             (result[0]['node']['name'], result[0]['node']['code'], result[0]['node']['version'])
-        )
-
-    def test_contribution_plan_bundle_create_date_valid_from_and_date_valid_to(self):
-        time_stamp = datetime.datetime.now()
-        input_param = {
-            "code": "XYZ DT",
-            "name": "XYZ test date xyz - "+str(time_stamp),
-            "dateValidFrom": "2020-12-20",
-            "dateValidTo": "2020-12-20",
-        }
-        self.add_mutation("createContributionPlanBundle", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlanBundle", input_param)["edges"]
-        self.assertEqual(
-            (
-                "XYZ test date xyz - "+str(time_stamp),
-                "XYZ DT",
-                1,
-                "2020-12-20T00:00:00",
-                "2020-12-20T00:00:00"
-            ),
-            (
-                result[0]['node']['name'],
-                result[0]['node']['code'],
-                result[0]['node']['version'],
-                result[0]['node']['dateValidFrom'],
-                result[0]['node']['dateValidTo']
-            )
         )
 
     def test_contribution_plan_bundle_create_without_obligatory_fields(self):
@@ -95,6 +77,10 @@ class MutationTestContributionPlanBundle(TestCase):
         }
         self.add_mutation("deleteContributionPlanBundle", input_param2)
         result2 = self.find_by_exact_attributes_query("contributionPlanBundle", {**input_param, 'isDeleted': False})
+
+        # tear down the test data
+        ContributionPlanBundle.objects.filter(id__in=converted_ids).delete()
+
         self.assertEqual((2, 0), (result["totalCount"], result2["totalCount"]))
 
     def test_contribution_plan_bundle_delete_single_deletion(self):
@@ -111,6 +97,10 @@ class MutationTestContributionPlanBundle(TestCase):
         }
         self.add_mutation("deleteContributionPlanBundle", input_param2)
         result2 = self.find_by_exact_attributes_query("contributionPlanBundle", {**input_param, 'isDeleted': False})
+
+        # tear down the test data
+        ContributionPlanBundle.objects.filter(id=f"{converted_id}").delete()
+
         self.assertEqual((1, 0), (result["totalCount"], result2["totalCount"]))
 
     def test_contribution_plan_bundle_update_1_existing(self):
@@ -193,90 +183,6 @@ class MutationTestContributionPlanBundle(TestCase):
         }
         result_mutation = self.add_mutation("updateContributionPlanBundle", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
-
-    def test_contribution_plan_bundle_replace(self):
-        time_stamp = datetime.datetime.now()
-        input_param = {
-            "code": "XYZ",
-            "name": "XYZ test name xyz - " + str(time_stamp),
-        }
-        self.add_mutation("createContributionPlanBundle", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlanBundle", input_param)["edges"]
-        id_record = f"{base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]}"
-        input_param = {
-            "uuid": id_record,
-            "dateValidFrom": "2021-01-01"
-        }
-        self.add_mutation("replaceContributionPlanBundle", input_param)
-        result_replaced = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": id_record})["edges"]
-        result_newly_created = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": result_replaced[0]["node"]["replacementUuid"]})["edges"]
-        converted_id = base64.b64decode(result_newly_created[0]['node']['id']).decode('utf-8').split(':')[1]
-        self.assertEqual(
-            (
-                True,
-                2,
-                True,
-                result_replaced[0]['node']['replacementUuid'],
-                1
-            ),
-            (
-                result_replaced[0]['node']['replacementUuid'] is not None,
-                result_replaced[0]['node']['version'],
-                result_replaced[0]['node']['dateValidFrom'] is not None,
-                converted_id,
-                result_newly_created[0]['node']['version']
-            )
-        )
-
-    def test_contribution_plan_bundle_replace_twice(self):
-        time_stamp = datetime.datetime.now()
-
-        input_param = {
-            "code": "XYZ",
-            "name": "XYZ test name xyz - " + str(time_stamp),
-        }
-
-        self.add_mutation("createContributionPlanBundle", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlanBundle", input_param)["edges"]
-        id_record = f"{base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]}"
-
-        input_param = {
-            "uuid": id_record,
-            "dateValidFrom": "2021-01-01"
-        }
-
-        self.add_mutation("replaceContributionPlanBundle", input_param)
-        result_replaced = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": id_record})["edges"]
-        result_newly_created = self.find_by_exact_attributes_query("contributionPlanBundle", {
-            "id": result_replaced[0]["node"]["replacementUuid"]})["edges"]
-        converted_id = base64.b64decode(result_newly_created[0]['node']['id']).decode('utf-8').split(':')[1]
-
-        input_param = {
-            "uuid": converted_id,
-            "dateValidFrom": "2021-01-01"
-        }
-        self.add_mutation("replaceContributionPlanBundle", input_param)
-        result_replaced2 = self.find_by_exact_attributes_query("contributionPlanBundle", {"id": converted_id})["edges"]
-        result_newly_created2 = self.find_by_exact_attributes_query("contributionPlanBundle", {
-            "id": result_replaced2[0]["node"]["replacementUuid"]})["edges"]
-        converted_id2 = base64.b64decode(result_newly_created2[0]['node']['id']).decode('utf-8').split(':')[1]
-
-        self.assertEqual(
-            (
-                True,
-                2,
-                True,
-                result_replaced2[0]['node']['replacementUuid'],
-                1
-            ),
-            (
-                result_replaced2[0]['node']['replacementUuid'] is not None,
-                result_replaced2[0]['node']['version'],
-                result_replaced2[0]['node']['dateValidFrom'] is not None,
-                converted_id2,
-                result_newly_created2[0]['node']['version']
-            )
-        )
 
     def find_by_id_query(self, query_type, id, context=None):
         query = F'''

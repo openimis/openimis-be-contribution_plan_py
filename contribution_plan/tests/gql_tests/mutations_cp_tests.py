@@ -6,8 +6,10 @@ from uuid import UUID
 
 import graphene
 from contribution_plan.tests.helpers import *
-from calculation.tests.helpers import *
 from contribution_plan import schema as contribution_plan_schema
+from calculation.calculation_rule import ContributionValuationRule
+from core import datetime
+from product.test_helpers import create_test_product
 from graphene import Schema
 from graphene.test import Client
 
@@ -25,31 +27,42 @@ class MutationTestContributionPlan(TestCase):
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
         cls.test_contribution_plan = create_test_contribution_plan()
-        cls.test_calculation = create_test_calculation_rules()
-        cls.test_calculation2 = create_test_calculation_rules()
+        cls.test_calculation = ContributionValuationRule.uuid
+        cls.test_calculation2 = ContributionValuationRule.uuid
         cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
-
+        cls.test_product = create_test_product("PlanCode", custom_props={"insurance_period": 12, })
         cls.schema = Schema(
             query=contribution_plan_schema.Query,
             mutation=contribution_plan_schema.Mutation
         )
-
         cls.graph_client = Client(cls.schema)
+
+    @classmethod
+    def tearDownClass(cls):
+        ContributionPlan.objects.filter(id=cls.test_contribution_plan.id).delete()
+        ContributionPlanBundle.objects.filter(id=cls.test_contribution_plan_bundle.id).delete()
+        ContributionPlanBundleDetails.objects.filter(id=cls.test_contribution_plan_details.id).delete()
 
     def test_contribution_plan_create(self):
         time_stamp = datetime.datetime.now()
         input_param = {
             "code": "XYZ",
             "name": "XYZ test name xyz - "+str(time_stamp),
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
+            "benefitPlanId": self.test_product.id,
+            "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
+
         self.add_mutation("createContributionPlan", input_param)
         result = self.find_by_exact_attributes_query(
             "contributionPlan",
             params = input_param,
         )["edges"]
+
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        # tear down the test data
+        ContributionPlan.objects.filter(id=f"{converted_id}").delete()
+
         self.assertEqual(
             (
                 "XYZ test name xyz - "+str(time_stamp),
@@ -62,37 +75,6 @@ class MutationTestContributionPlan(TestCase):
                  result[0]['node']['code'],
                  result[0]['node']['version'],
                  result[0]['node']['periodicity']
-            )
-        )
-
-    def test_contribution_plan_create_date_valid_from_and_date_valid_to(self):
-        time_stamp = datetime.datetime.now()
-        input_param = {
-            "code": "XYZ DT",
-            "name": "XYZ test date xyz - "+str(time_stamp),
-            "dateValidFrom": "2020-12-20",
-            "dateValidTo": "2020-12-20",
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
-            "periodicity": 12,
-        }
-        self.add_mutation("createContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
-        self.assertEqual(
-            ( "XYZ test date xyz - "+str(time_stamp),
-              "XYZ DT",
-              1,
-              "2020-12-20T00:00:00",
-              "2020-12-20T00:00:00",
-              12
-            ),
-            (
-              result[0]['node']['name'],
-              result[0]['node']['code'],
-              result[0]['node']['version'],
-              result[0]['node']['dateValidFrom'],
-              result[0]['node']['dateValidTo'],
-              result[0]['node']['periodicity']
             )
         )
 
@@ -109,8 +91,8 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "code": "XYZ deletion",
             "name": "XYZ test deletion xyz - "+str(time_stamp),
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
+            "benefitPlanId": self.test_product.id,
+            "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
         self.add_mutation("createContributionPlan", input_param)
@@ -123,6 +105,10 @@ class MutationTestContributionPlan(TestCase):
         }
         self.add_mutation("deleteContributionPlan", input_param2)
         result2 = self.find_by_exact_attributes_query("contributionPlan", {**input_param, 'isDeleted': False})
+
+        # tear down the test data
+        ContributionPlan.objects.filter(id__in=converted_ids).delete()
+
         self.assertEqual((2, 0), (result["totalCount"], result2["totalCount"]))
 
     def test_contribution_plan_delete_single_deletion(self):
@@ -130,8 +116,8 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "code": "XYZ deletion",
             "name": "XYZ test deletion xyz - "+str(time_stamp),
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
+            "benefitPlanId": self.test_product.id,
+            "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
         self.add_mutation("createContributionPlan", input_param)
@@ -142,8 +128,11 @@ class MutationTestContributionPlan(TestCase):
         }
         self.add_mutation("deleteContributionPlan", input_param2)
         result2 = self.find_by_exact_attributes_query("contributionPlan", {**input_param, 'isDeleted': False})
-        self.assertEqual((1, 0), (result["totalCount"], result2["totalCount"]))
 
+        # tear down the test data
+        ContributionPlan.objects.filter(id=f"{converted_id}").delete()
+
+        self.assertEqual((1, 0), (result["totalCount"], result2["totalCount"]))
 
     def test_contribution_plan_update_1_existing(self):
         id = self.test_contribution_plan.id
@@ -155,6 +144,7 @@ class MutationTestContributionPlan(TestCase):
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
+
         self.assertEqual(
             ("XYZ test name xxxxx", version+1),
             (result[0]['node']['name'], result[0]['node']['version'])
@@ -170,34 +160,11 @@ class MutationTestContributionPlan(TestCase):
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
+
         self.assertEqual(
             ("XYZ test name xxxxx", version),
             (result[0]['node']['name'], result[0]['node']['version'])
         )
-
-    def test_contribution_plan_update_3_existing_foreign_key(self):
-        id = self.test_contribution_plan.id
-        version = self.test_contribution_plan.version
-        input_param = {
-            "id": f"{id}",
-            "calculationId": f"{self.test_calculation2.id}",
-        }
-        self.add_mutation("updateContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
-        self.test_contribution_plan.version = result[0]['node']['version']
-        self.assertEqual(version+1, result[0]['node']['version'])
-
-    def test_contribution_plan_update_4_without_changing_fields_foreign_key(self):
-        id = self.test_contribution_plan.id
-        version = self.test_contribution_plan.version
-        input_param = {
-            "id": f"{id}",
-            "calculationId": f"{self.test_calculation2.id}",
-        }
-        self.add_mutation("updateContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
-        self.test_contribution_plan.version = result[0]['node']['version']
-        self.assertEqual(version, result[0]['node']['version'])
 
     def test_contribution_plan_update_5_existing_date_valid_from_change(self):
         id = self.test_contribution_plan.id
@@ -210,6 +177,7 @@ class MutationTestContributionPlan(TestCase):
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
+
         self.assertEqual(
             ("XYZ test name xxxxx", version+1, "2020-12-09T00:00:00"),
             (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
@@ -226,6 +194,7 @@ class MutationTestContributionPlan(TestCase):
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
+
         self.assertEqual(
             ("XYZ test name xxxxx", version, "2020-12-09T00:00:00"),
             (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
@@ -239,96 +208,6 @@ class MutationTestContributionPlan(TestCase):
         }
         result_mutation = self.add_mutation("updateContributionPlan", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
-
-    def test_contribution_bundle_update_replace(self):
-        time_stamp = datetime.datetime.now()
-        input_param = {
-            "code": "XYZ",
-            "name": "XYZ test name xyz - " + str(time_stamp),
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
-            "periodicity": 12,
-        }
-        self.add_mutation("createContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
-        id_record = f"{base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]}"
-        input_param = {
-            "uuid": id_record,
-            "dateValidFrom": "2021-01-01"
-        }
-        self.add_mutation("replaceContributionPlan", input_param)
-        result_replaced = self.find_by_exact_attributes_query("contributionPlan", {"id": id_record})["edges"]
-        result_newly_created = self.find_by_exact_attributes_query("contributionPlan", {"id": result_replaced[0]["node"]["replacementUuid"]})["edges"]
-        converted_id = base64.b64decode(result_newly_created[0]['node']['id']).decode('utf-8').split(':')[1]
-        self.assertEqual(
-            (
-                True,
-                2,
-                True,
-                result_replaced[0]['node']['replacementUuid'],
-                1
-            ),
-            (
-                result_replaced[0]['node']['replacementUuid'] is not None,
-                result_replaced[0]['node']['version'],
-                result_replaced[0]['node']['dateValidFrom'] is not None,
-                converted_id,
-                result_newly_created[0]['node']['version']
-            )
-        )
-
-    def test_contribution_plan_update_replace_twice(self):
-        time_stamp = datetime.datetime.now()
-
-        input_param = {
-            "code": "XYZ",
-            "name": "XYZ test name xyz - " + str(time_stamp),
-            "benefitPlanId": 1,
-            "calculationId": f"{self.test_calculation.id}",
-            "periodicity": 12,
-        }
-
-        self.add_mutation("createContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
-        id_record = f"{base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]}"
-
-        input_param = {
-            "uuid": id_record,
-            "dateValidFrom": "2021-01-01"
-        }
-
-        self.add_mutation("replaceContributionPlan", input_param)
-        result_replaced = self.find_by_exact_attributes_query("contributionPlan", {"id": id_record})["edges"]
-        result_newly_created = self.find_by_exact_attributes_query("contributionPlan", {
-            "id": result_replaced[0]["node"]["replacementUuid"]})["edges"]
-        converted_id = base64.b64decode(result_newly_created[0]['node']['id']).decode('utf-8').split(':')[1]
-
-        input_param = {
-            "uuid": converted_id,
-            "dateValidFrom": "2021-01-01"
-        }
-        self.add_mutation("replaceContributionPlan", input_param)
-        result_replaced2 = self.find_by_exact_attributes_query("contributionPlan", {"id": converted_id})["edges"]
-        result_newly_created2 = self.find_by_exact_attributes_query("contributionPlan", {
-            "id": result_replaced2[0]["node"]["replacementUuid"]})["edges"]
-        converted_id2 = base64.b64decode(result_newly_created2[0]['node']['id']).decode('utf-8').split(':')[1]
-
-        self.assertEqual(
-            (
-                True,
-                2,
-                True,
-                result_replaced2[0]['node']['replacementUuid'],
-                1
-            ),
-            (
-                result_replaced2[0]['node']['replacementUuid'] is not None,
-                result_replaced2[0]['node']['version'],
-                result_replaced2[0]['node']['dateValidFrom'] is not None,
-                converted_id2,
-                result_newly_created2[0]['node']['version']
-            )
-        )
 
     def find_by_id_query(self, query_type, id, context=None):
         query = F'''
@@ -361,8 +240,8 @@ class MutationTestContributionPlan(TestCase):
             params.pop('dateValidTo')
         if "benefitPlanId" in params:
             params.pop('benefitPlanId')
-        if "calculationId" in params:
-            params.pop('calculationId')
+        if "calculation" in params:
+            params.pop('calculation')
         node_content_str = "\n".join(params.keys())
         query = F'''
         {{

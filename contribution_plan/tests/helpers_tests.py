@@ -25,15 +25,9 @@ class HelpersTest(TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.contribution_plan_bundle.delete()
-        cls.contribution_plan_bundle_custom.delete()
-
-        cls.contribution_plan.delete()
-        #cls.contribution_plan_custom.delete()
-
-        cls.contribution_plan_details.delete()
-
-        cls.contribution_plan_details_custom.delete()
+        ContributionPlanBundleDetails.objects.filter(id__in=[cls.contribution_plan_details_custom.id, cls.contribution_plan_details.id]).delete()
+        ContributionPlan.objects.filter(id__in=[cls.contribution_plan.id, cls.contribution_plan_custom.id]).delete()
+        ContributionPlanBundle.objects.filter(id__in=[cls.contribution_plan_bundle.id, cls.contribution_plan_bundle_custom.id]).delete()
 
     def test_create_test_contribution_plan_bundle(self):
         db_contribution_plan_bundle = ContributionPlanBundle.objects\
