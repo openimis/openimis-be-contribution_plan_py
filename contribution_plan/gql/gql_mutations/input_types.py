@@ -56,7 +56,7 @@ class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
 
 class ContributionPlanReplaceInputType(ReplaceInputType):
     name = graphene.String(required=False, max_lenght=255)
-    calculation_id = graphene.UUID(required=False)
+    calculation = graphene.UUID(required=False)
     benefit_plan_id = graphene.Int(required=False)
     periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=True)
