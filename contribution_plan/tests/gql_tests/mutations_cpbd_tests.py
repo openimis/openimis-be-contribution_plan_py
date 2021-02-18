@@ -34,6 +34,12 @@ class MutationTestContributionPlanBundleDetails(TestCase):
 
         cls.graph_client = Client(cls.schema)
 
+    @classmethod
+    def tearDownClass(cls):
+        ContributionPlanBundleDetails.objects.filter(id=cls.test_contribution_plan_bundle_details.id).delete()
+        ContributionPlan.objects.filter(id__in=[cls.test_contribution_plan.id, cls.test_contribution_plan2.id]).delete()
+        ContributionPlanBundle.objects.filter(id=cls.test_contribution_plan_bundle.id).delete()
+
     def test_contribution_plan_bundle_details_create_without_obligatory_fields(self):
         time_stamp = datetime.datetime.now()
         input_param = {

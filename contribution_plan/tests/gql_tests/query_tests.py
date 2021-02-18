@@ -34,6 +34,12 @@ class QueryTest(TestCase):
 
         cls.graph_client = Client(cls.schema)
 
+    @classmethod
+    def tearDownClass(cls):
+        ContributionPlanBundleDetails.objects.filter(id=cls.test_contribution_plan_details.id).delete()
+        ContributionPlan.objects.filter(id=cls.test_contribution_plan.id).delete()
+        ContributionPlanBundle.objects.filter(id=cls.test_contribution_plan_bundle.id).delete()
+
     def test_find_contribution_plan_bundle_existing(self):
         id = self.test_contribution_plan_bundle.id
         result = self.find_by_id_query("contributionPlanBundle", id)
