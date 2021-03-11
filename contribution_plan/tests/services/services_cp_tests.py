@@ -1,6 +1,6 @@
 import json
 
-from unittest import TestCase
+from django.test import TestCase
 from contribution_plan.services import ContributionPlan as ContributionPlanService, ContributionPlanBundle as ContributionPlanBundleService, \
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsService
 from contribution_plan.models import ContributionPlan, ContributionPlanBundle, ContributionPlanBundleDetails
@@ -16,7 +16,9 @@ class ServiceTestContributionPlan(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.user = User.objects.get(username="admin")
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
+        cls.user = User.objects.filter(username='admin').first()
         cls.contribution_plan_service = ContributionPlanService(cls.user)
         cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)
         cls.contribution_plan_bundle_details_service = ContributionPlanBundleDetailsService(cls.user)

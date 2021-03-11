@@ -14,13 +14,17 @@ from graphene.test import Client
 class MutationTestContributionPlanBundleDetails(TestCase):
 
     class BaseTestContext:
-        user = User.objects.get(username="admin")
+        def __init__(self, user):
+            self.user = user
 
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
 
     @classmethod
     def setUpClass(cls):
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
+        cls.user = User.objects.filter(username='admin').first()
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
         cls.test_contribution_plan = create_test_contribution_plan()
@@ -142,7 +146,7 @@ class MutationTestContributionPlanBundleDetails(TestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context = self.BaseTestContext()
+            context = self.BaseTestContext(self.user)
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
@@ -167,7 +171,7 @@ class MutationTestContributionPlanBundleDetails(TestCase):
 
     def execute_mutation(self, mutation, context=None):
         if context is None:
-            context = self.BaseTestContext()
+            context = self.BaseTestContext(self.user)
 
         mutation_result = self.graph_client.execute(mutation, context=context)
         return mutation_result
