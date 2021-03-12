@@ -1,7 +1,8 @@
 import datetime
 import numbers
 import base64
-from unittest import TestCase, mock
+from unittest import mock
+from django.test import TestCase
 from uuid import UUID
 
 import graphene
@@ -17,13 +18,17 @@ from graphene.test import Client
 class MutationTestContributionPlan(TestCase):
 
     class BaseTestContext:
-        user = User.objects.get(username="admin")
+        def __init__(self, user):
+            self.user = user
 
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
 
     @classmethod
     def setUpClass(cls):
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
+        cls.user = User.objects.filter(username='admin').first()
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
         cls.test_contribution_plan = create_test_contribution_plan()
@@ -172,15 +177,15 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
-            "dateValidFrom": "2020-12-09"
+            "dateValidFrom": "2020-12-10"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
 
         self.assertEqual(
-            ("XYZ test name xxxxx", version+1, "2020-12-09T00:00:00"),
-            (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
+            ("XYZ test name xxxxx", "2020-12-10T00:00:00"),
+            (result[0]['node']['name'], result[0]['node']['dateValidFrom'])
         )
 
     def test_contribution_plan_update_6_date_valid_from_without_changing_fields(self):
@@ -189,15 +194,14 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
-            "dateValidFrom": "2020-12-09"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
         self.test_contribution_plan.version = result[0]['node']['version']
 
         self.assertEqual(
-            ("XYZ test name xxxxx", version, "2020-12-09T00:00:00"),
-            (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
+            ("XYZ test name xxxxx", version),
+            (result[0]['node']['name'], result[0]['node']['version'])
         )
 
     def test_contribution_plan_update_7_without_id_field(self):
@@ -267,7 +271,7 @@ class MutationTestContributionPlan(TestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context = self.BaseTestContext()
+            context = self.BaseTestContext(self.user)
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
@@ -292,7 +296,7 @@ class MutationTestContributionPlan(TestCase):
 
     def execute_mutation(self, mutation, context=None):
         if context is None:
-            context = self.BaseTestContext()
+            context = self.BaseTestContext(self.user)
 
         mutation_result = self.graph_client.execute(mutation, context=context)
         return mutation_result

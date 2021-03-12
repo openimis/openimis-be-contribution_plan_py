@@ -1,6 +1,6 @@
 from datetime import date
 from functools import lru_cache
-from unittest import TestCase
+from django.test import TestCase
 
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
 from contribution_plan.tests.helpers import create_test_contribution_plan_bundle, create_test_contribution_plan, \
