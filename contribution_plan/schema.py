@@ -4,7 +4,7 @@ import graphene_django_optimizer as gql_optimizer
 from core.schema import signal_mutation_module_validate
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType
-from core.utils import filter_validity_business_model
+from core.utils import append_validity_filter
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
     DeleteContributionPlanBundleDetailsMutation, ReplaceContributionPlanBundleDetailsMutation
@@ -23,7 +23,8 @@ class Query(graphene.ObjectType):
         ContributionPlanGQLType,
         orderBy=graphene.List(of_type=graphene.String),
         dateValidFrom__Gte=graphene.DateTime(),
-        dateValidTo__Lte=graphene.DateTime()
+        dateValidTo__Lte=graphene.DateTime(),
+        applyDefaultValidityFilter=graphene.Boolean()
     )
 
     contribution_plan_bundle = OrderedDjangoFilterConnectionField(
@@ -32,27 +33,31 @@ class Query(graphene.ObjectType):
         calculation=graphene.UUID(),
         insuranceProduct=graphene.Int(),
         dateValidFrom__Gte=graphene.DateTime(),
-        dateValidTo__Lte=graphene.DateTime()
+        dateValidTo__Lte=graphene.DateTime(),
+        applyDefaultValidityFilter=graphene.Boolean()
     )
 
     contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
         ContributionPlanBundleDetailsGQLType,
         orderBy=graphene.List(of_type=graphene.String),
         dateValidFrom__Gte=graphene.DateTime(),
-        dateValidTo__Lte=graphene.DateTime()
+        dateValidTo__Lte=graphene.DateTime(),
+        applyDefaultValidityFilter=graphene.Boolean()
     )
 
     def resolve_contribution_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
            raise PermissionError("Unauthorized")
 
+        filters = append_validity_filter(**kwargs)
         query = ContributionPlan.objects
-        return gql_optimizer.query(query.filter(*filter_validity_business_model(**kwargs)).all(), info)
+        return gql_optimizer.query(query.filter(*filters).all(), info)
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplanbundle_perms):
            raise PermissionError("Unauthorized")
 
+        filters = append_validity_filter(**kwargs)
         query = ContributionPlanBundle.objects
 
         calculation = kwargs.get('calculation', None)
@@ -60,7 +65,7 @@ class Query(graphene.ObjectType):
 
         if calculation:
             query = query.filter(
-                contributionplanbundledetails__contribution_plan__calculation__id=str(calculation)
+                contributionplanbundledetails__contribution_plan__calculation=str(calculation)
             )
 
         if insurance_product:
@@ -68,7 +73,7 @@ class Query(graphene.ObjectType):
                 contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
             )
 
-        return gql_optimizer.query(query.filter(*filter_validity_business_model(**kwargs)).all(), info)
+        return gql_optimizer.query(query.filter(*filters).all(), info)
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):
         if not (info.context.user.has_perms(
@@ -76,8 +81,9 @@ class Query(graphene.ObjectType):
                 ContributionPlanConfig.gql_query_contributionplan_perms)):
            raise PermissionError("Unauthorized")
 
+        filters = append_validity_filter(**kwargs)
         query = ContributionPlanBundleDetails.objects
-        return gql_optimizer.query(query.filter(*filter_validity_business_model(**kwargs)).all(), info)
+        return gql_optimizer.query(query.filter(*filters).all(), info)
 
 
 class Mutation(graphene.ObjectType):
