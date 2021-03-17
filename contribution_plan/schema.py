@@ -66,12 +66,12 @@ class Query(graphene.ObjectType):
         if calculation:
             query = query.filter(
                 contributionplanbundledetails__contribution_plan__calculation=str(calculation)
-            )
+            ).distinct()
 
         if insurance_product:
             query = query.filter(
                 contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
-            )
+            ).distinct()
 
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
