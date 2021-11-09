@@ -1,5 +1,6 @@
 import graphene
-from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
+from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
+    ContributionPlanBundleDetails, PaymentPlan
 from core import ExtendedConnection, prefix_filterset
 from graphene_django import DjangoObjectType
 from product.schema import ProductGQLType
@@ -82,3 +83,29 @@ class ContributionPlanBundleDetailsGQLType(DjangoObjectType):
     def get_queryset(cls, queryset, info):
         return ContributionPlanBundleDetails.get_queryset(queryset, info)
 
+
+class PaymentPlanGQLType(DjangoObjectType):
+
+    class Meta:
+        model = PaymentPlan
+        interfaces = (graphene.relay.Node,)
+        filter_fields = {
+            "id": ["exact"],
+            "version": ["exact"],
+            "code": ["exact", "istartswith", "icontains", "iexact"],
+            "name": ["exact", "istartswith", "icontains", "iexact"],
+            **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
+            "calculation": ["exact"],
+            "periodicity": ["exact", "lt", "lte", "gt", "gte"],
+            "date_created": ["exact", "lt", "lte", "gt", "gte"],
+            "date_updated": ["exact", "lt", "lte", "gt", "gte"],
+            "user_created": ["exact"],
+            "user_updated": ["exact"],
+            "is_deleted": ["exact"]
+        }
+
+        connection_class = ExtendedConnection
+
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        return PaymentPlan.get_queryset(queryset, info)

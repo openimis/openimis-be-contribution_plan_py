@@ -85,3 +85,15 @@ class ContributionPlanBundleDetailsReplaceInputType(ReplaceInputType):
     contribution_plan_id = graphene.UUID(required=False)
     date_valid_from = graphene.Date(required=True)
     date_valid_to = graphene.Date(required=False)
+
+
+class PaymentPlanInputType(ContributionPlanInputType):
+    pass
+
+
+class PaymentPlanUpdateInputType(ContributionPlanUpdateInputType):
+    pass
+
+
+class PaymentPlanReplaceInputType(ContributionPlanReplaceInputType):
+    pass
