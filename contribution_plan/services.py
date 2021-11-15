@@ -4,7 +4,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import AnonymousUser
 from django.forms.models import model_to_dict
 from contribution_plan.models import ContributionPlan as ContributionPlanModel, ContributionPlanBundle as ContributionPlanBundleModel, \
-    ContributionPlanBundleDetails as ContributionPlanBundleDetailsModel
+    ContributionPlanBundleDetails as ContributionPlanBundleDetailsModel, PaymentPlan as PaymentPlanModel
 
 
 def check_authentication(function):
@@ -221,6 +221,79 @@ class ContributionPlanBundleDetails(object):
             }
         except Exception as exc:
             return _output_exception(model_name="ContributionPlanBundleDetails", method="delete", exception=exc)
+
+
+class PaymentPlan(object):
+
+    def __init__(self, user):
+        self.user = user
+
+    @check_authentication
+    def get_by_id(self, by_payment_plan):
+        try:
+            pp = PaymentPlanModel.objects.get(id=by_payment_plan.id)
+            uuid_string = str(pp.id)
+            dict_representation = model_to_dict(pp)
+            dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
+        except Exception as exc:
+            return _output_exception(model_name="PaymentPlan", method="get", exception=exc)
+        return _output_result_success(dict_representation=dict_representation)
+
+    @check_authentication
+    def create(self, payment_plan):
+        try:
+            pp = PaymentPlanModel(**payment_plan)
+            pp.save(username=self.user.username)
+            uuid_string = str(pp.id)
+            dict_representation = model_to_dict(pp)
+            dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
+        except Exception as exc:
+            return _output_exception(model_name="PaymentPlan", method="create", exception=exc)
+        return _output_result_success(dict_representation=dict_representation)
+
+    @check_authentication
+    def update(self, payment_plan):
+        try:
+            updated_pp = PaymentPlanModel.objects.filter(id=payment_plan['id']).first()
+            [setattr(updated_pp, key, payment_plan[key]) for key in payment_plan]
+            updated_pp.save(username=self.user.username)
+            uuid_string = str(updated_pp.id)
+            dict_representation = model_to_dict(updated_pp)
+            dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
+        except Exception as exc:
+            return _output_exception(model_name="payment_plan", method="update", exception=exc)
+        return _output_result_success(dict_representation=dict_representation)
+
+    @check_authentication
+    def delete(self, payment_plan):
+        try:
+            pp_to_delete = PaymentPlanModel.objects.filter(id=payment_plan['id']).first()
+            pp_to_delete.delete(username=self.user.username)
+            return {
+                "success": True,
+                "message": "Ok",
+                "detail": "",
+            }
+        except Exception as exc:
+            return _output_exception(model_name="PaymentPlanModel", method="delete", exception=exc)
+
+    @check_authentication
+    def replace(self, payment_plan):
+        try:
+            pp_to_replace = PaymentPlanModel.objects.filter(id=payment_plan['uuid']).first()
+            pp_to_replace.replace_object(data=payment_plan, username=self.user.username)
+            uuid_string = str(pp_to_replace.id)
+            dict_representation = model_to_dict(pp_to_replace)
+            dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
+        except Exception as exc:
+            return _output_exception(model_name="ContributionPlan", method="replace", exception=exc)
+        return {
+            "success": True,
+            "message": "Ok",
+            "detail": "",
+            "old_object": json.loads(json.dumps(dict_representation, cls=DjangoJSONEncoder)),
+            "uuid_new_object": str(pp_to_replace.replacement_uuid),
+        }
 
 
 def _output_exception(model_name, method, exception):

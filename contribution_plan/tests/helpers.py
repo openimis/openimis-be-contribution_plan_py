@@ -1,7 +1,8 @@
 import json
 from functools import lru_cache
 
-from contribution_plan.models import ContributionPlanBundle, ContributionPlan, ContributionPlanBundleDetails
+from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
+    ContributionPlanBundleDetails, PaymentPlan
 from datetime import date
 
 from core.models import InteractiveUser, User
@@ -74,6 +75,29 @@ def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, 
     contribution_plan_bundle_details.save(username=user.username)
 
     return contribution_plan_bundle_details
+
+
+def create_test_payment_plan(product=None, calculation=ContributionValuationRule.uuid, custom_props={}):
+    if not product:
+        product = create_test_product("PlanCode", custom_props={"insurance_period": 12,})
+
+    user = __get_or_create_simple_contribution_plan_user()
+
+    object_data = {
+        'is_deleted': False,
+        'code': "Payment Plan Code",
+        'name': "Payment Plan Name",
+        'benefit_plan': product,
+        'periodicity': 12,
+        'calculation': calculation,
+        'json_ext': json.dumps("{}"),
+        **custom_props
+    }
+
+    payment_plan = PaymentPlan(**object_data)
+    payment_plan.save(username=user.username)
+
+    return payment_plan
 
 
 def __get_or_create_simple_contribution_plan_user():

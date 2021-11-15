@@ -2,8 +2,9 @@ import json
 
 from django.test import TestCase
 from contribution_plan.services import ContributionPlan as ContributionPlanService, ContributionPlanBundle as ContributionPlanBundleService, \
-    ContributionPlanBundleDetails as ContributionPlanBundleDetailsService
-from contribution_plan.models import ContributionPlan, ContributionPlanBundle, ContributionPlanBundleDetails
+    ContributionPlanBundleDetails as ContributionPlanBundleDetailsService, PaymentPlan as PaymentPlanService
+from contribution_plan.models import ContributionPlan, ContributionPlanBundle, \
+    ContributionPlanBundleDetails, PaymentPlan
 from calculation.calculation_rule import ContributionValuationRule
 from product.models import Product
 from core.models import User
@@ -22,6 +23,7 @@ class ServiceTestContributionPlan(TestCase):
         cls.contribution_plan_service = ContributionPlanService(cls.user)
         cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)
         cls.contribution_plan_bundle_details_service = ContributionPlanBundleDetailsService(cls.user)
+        cls.payment_plan_service = PaymentPlanService(cls.user)
         cls.test_product = create_test_product("PlanCode", custom_props={"insurance_period": 12,})
         cls.test_product2 = create_test_product("PC", custom_props={"insurance_period": 6})
         cls.contribution_plan_bundle = create_test_contribution_plan_bundle()
@@ -174,7 +176,6 @@ class ServiceTestContributionPlan(TestCase):
                 response['data']['benefit_plan']
             )
         )
-
 
     def test_contribution_plan_update_without_changing_field(self):
         contribution_plan = {
@@ -609,5 +610,83 @@ class ServiceTestContributionPlan(TestCase):
                  response['data']['version'],
                  response['data']['contribution_plan'],
                  response['data']['contribution_plan_bundle'],
+            )
+        )
+
+    def test_payment_plan_create(self):
+        payment_plan = {
+            'code': "PP SERVICE",
+            'name': "Payment Plan Name Service",
+            'benefit_plan_id': self.test_product.id,
+            'periodicity': 6,
+            'calculation': str(self.calculation),
+            'json_ext': json.dumps("{}"),
+        }
+
+        response = self.payment_plan_service.create(payment_plan)
+
+        # tear down the test data
+        PaymentPlan.objects.filter(id=response["data"]["id"]).delete()
+
+        self.assertEqual(
+            (
+                 True,
+                 "Ok",
+                 "",
+                 "PP SERVICE",
+                 "Payment Plan Name Service",
+                 1,
+                 6,
+                 self.test_product.id,
+                 str(self.calculation),
+            ),
+            (
+                 response['success'],
+                 response['message'],
+                 response['detail'],
+                 response['data']['code'],
+                 response['data']['name'],
+                 response['data']['version'],
+                 response['data']['periodicity'],
+                 response['data']['benefit_plan'],
+                 response['data']['calculation'],
+            )
+        )
+
+    def test_payment_plan_create_update(self):
+        payment_plan = {
+            'code': "PP SERUPD",
+            'name': "PP for update",
+            'benefit_plan_id': self.test_product.id,
+            'periodicity': 6,
+            'calculation': str(self.calculation),
+            'json_ext': json.dumps("{}"),
+        }
+
+        response = self.payment_plan_service.create(payment_plan)
+        payment_plan_object = PaymentPlan.objects.get(id=response['data']['id'])
+        payment_plan_to_update = {
+            'id': str(payment_plan_object.id),
+            'periodicity': 12,
+        }
+        response = self.payment_plan_service.update(payment_plan_to_update)
+
+        # tear down the test data
+        PaymentPlan.objects.filter(id=payment_plan_object.id).delete()
+
+        self.assertEqual(
+            (
+                True,
+                "Ok",
+                "",
+                12,
+                2,
+            ),
+            (
+                response['success'],
+                response['message'],
+                response['detail'],
+                response['data']['periodicity'],
+                response['data']['version'],
             )
         )

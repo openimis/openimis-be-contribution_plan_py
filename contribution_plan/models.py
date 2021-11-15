@@ -4,6 +4,20 @@ from core import models as core_models, fields
 from core.signals import Signal
 from graphql import ResolveInfo
 from product.models import Product
+from contribution_plan.mixins import GenericPlanQuerysetMixin, GenericPlanManager
+
+
+class GenericPlan(GenericPlanQuerysetMixin, core_models.HistoryBusinessModel):
+    code = models.CharField(db_column="Code", max_length=255, blank=True, null=True)
+    name = models.CharField(db_column="Name", max_length=255, blank=True, null=True)
+    calculation = models.UUIDField(db_column="calculationUUID", null=False)
+    benefit_plan = models.ForeignKey(Product, db_column="BenefitPlanID", on_delete=models.deletion.DO_NOTHING)
+    periodicity = models.IntegerField(db_column="Periodicity", null=False)
+
+    objects = GenericPlanManager()
+
+    class Meta:
+        abstract = True
 
 
 _get_contribution_length_signal_params = ["grace_period"]
@@ -50,33 +64,22 @@ class ContributionPlanManager(models.Manager):
         return super(ContributionPlanManager, self).filter(*args, **kwargs)
 
 
-class ContributionPlan(core_models.HistoryBusinessModel):
-    code = models.CharField(db_column="Code", max_length=255, blank=True, null=True)
-    name = models.CharField(db_column="Name", max_length=255, blank=True, null=True)
-    calculation = models.UUIDField(db_column="calculationUUID", null=False)
-    benefit_plan = models.ForeignKey(Product, db_column="BenefitPlanID", on_delete=models.deletion.DO_NOTHING)
-    periodicity = models.IntegerField(db_column="Periodicity", null=False)
+class ContributionPlan(GenericPlan):
     length: int = None
-    objects = ContributionPlanManager()
 
     def get_contribution_length(self):
         self.length = self.periodicity
         get_contribution_length_signal.send(sender=self.__class__,  instance=self)
         return self.length
 
-    @classmethod
-    def get_queryset(cls, queryset, user):
-        queryset = cls.filter_queryset(queryset)
-        if isinstance(user, ResolveInfo):
-            user = user.context.user
-        if settings.ROW_SECURITY and user.is_anonymous:
-            return queryset.filter(id=None)
-        if settings.ROW_SECURITY:
-            pass
-        return queryset
-
     class Meta:
         db_table = 'tblContributionPlan'
+
+
+class PaymentPlan(GenericPlan):
+
+    class Meta:
+        db_table = 'tblPaymentPlan'
 
 
 class ContributionPlanBundleDetailsManager(models.Manager):

@@ -9,6 +9,8 @@ DEFAULT_CFG = {
     "gql_query_contributionplanbundle_admins_perms": [],
     "gql_query_contributionplan_perms": ["151201"],
     "gql_query_contributionplan_admins_perms": [],
+    "gql_query_paymentplan_perms": ["157101"],
+    "gql_query_paymentplan_admins_perms": [],
 
     "gql_mutation_create_contributionplanbundle_perms": ["151102"],
     "gql_mutation_update_contributionplanbundle_perms": ["151103"],
@@ -19,6 +21,11 @@ DEFAULT_CFG = {
     "gql_mutation_update_contributionplan_perms": ["151203"],
     "gql_mutation_delete_contributionplan_perms": ["151204"],
     "gql_mutation_replace_contributionplan_perms": ["151206"],
+
+    "gql_mutation_create_paymentplan_perms": ["157102"],
+    "gql_mutation_update_paymentplan_perms": ["157103"],
+    "gql_mutation_delete_paymentplan_perms": ["157104"],
+    "gql_mutation_replace_paymentplan_perms": ["157106"],
 }
 
 
@@ -31,6 +38,9 @@ class ContributionPlanConfig(AppConfig):
     gql_query_contributionplan_perms = []
     gql_query_contributionplan_admins_perms = []
 
+    gql_query_paymentplan_perms = []
+    gql_query_paymentplan_admins_perms = []
+
     gql_mutation_create_contributionplanbundle_perms = []
     gql_mutation_update_contributionplanbundle_perms = []
     gql_mutation_delete_contributionplanbundle_perms = []
@@ -40,6 +50,11 @@ class ContributionPlanConfig(AppConfig):
     gql_mutation_update_contributionplan_perms = []
     gql_mutation_delete_contributionplan_perms = []
     gql_mutation_replace_contributionplan_perms = []
+
+    gql_mutation_create_paymentplan_perms = []
+    gql_mutation_update_paymentplan_perms = []
+    gql_mutation_delete_paymentplan_perms = []
+    gql_mutation_replace_paymentplan_perms = []
 
     def _configure_permissions(selfself, cfg):
         ContributionPlanConfig.gql_query_contributionplanbundle_perms = cfg[
@@ -52,6 +67,12 @@ class ContributionPlanConfig(AppConfig):
             "gql_query_contributionplan_perms"]
         ContributionPlanConfig.gql_query_contributionplan_admins_perms = cfg[
             "gql_query_contributionplan_admins_perms"
+        ]
+
+        ContributionPlanConfig.gql_query_paymentplan_perms = cfg[
+            "gql_query_paymentplan_perms"]
+        ContributionPlanConfig.gql_query_paymentplan_admins_perms = cfg[
+            "gql_query_paymentplan_admins_perms"
         ]
 
         ContributionPlanConfig.gql_mutation_create_contributionplanbundle_perms = cfg[
@@ -78,6 +99,19 @@ class ContributionPlanConfig(AppConfig):
         ]
         ContributionPlanConfig.gql_mutation_replace_contributionplan_perms = cfg[
             "gql_mutation_replace_contributionplan_perms"
+        ]
+
+        ContributionPlanConfig.gql_mutation_create_paymentplan_perms = cfg[
+            "gql_mutation_create_paymentplan_perms"
+        ]
+        ContributionPlanConfig.gql_mutation_update_paymentplan_perms = cfg[
+            "gql_mutation_update_paymentplan_perms"
+        ]
+        ContributionPlanConfig.gql_mutation_delete_paymentplan_perms = cfg[
+            "gql_mutation_delete_paymentplan_perms"
+        ]
+        ContributionPlanConfig.gql_mutation_replace_paymentplan_perms = cfg[
+            "gql_mutation_replace_paymentplan_perms"
         ]
 
     def ready(self):
