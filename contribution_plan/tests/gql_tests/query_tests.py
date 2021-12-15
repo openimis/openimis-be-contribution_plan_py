@@ -27,6 +27,7 @@ class QueryTest(TestCase):
             custom_props={'code': 'SuperContributionPlan!'})
         cls.test_contribution_plan = create_test_contribution_plan()
         cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
+        cls.test_payment_plan = create_test_payment_plan()
 
         cls.schema = Schema(
             query=contribution_plan_schema.Query,
@@ -40,6 +41,7 @@ class QueryTest(TestCase):
         ContributionPlanBundleDetails.objects.filter(id=cls.test_contribution_plan_details.id).delete()
         ContributionPlan.objects.filter(id=cls.test_contribution_plan.id).delete()
         ContributionPlanBundle.objects.filter(id=cls.test_contribution_plan_bundle.id).delete()
+        PaymentPlan.objects.filter(id=cls.test_payment_plan.id).delete()
 
     def test_find_contribution_plan_bundle_existing(self):
         id = self.test_contribution_plan_bundle.id
@@ -50,6 +52,12 @@ class QueryTest(TestCase):
     def test_find_contribution_plan_existing(self):
         id = self.test_contribution_plan.id
         result = self.find_by_id_query("contributionPlan", id)
+        converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
+        self.assertEqual(UUID(converted_id), id)
+
+    def test_find_payment_plan_existing(self):
+        id = self.test_payment_plan.id
+        result = self.find_by_id_query("paymentPlan", id)
         converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
         self.assertEqual(UUID(converted_id), id)
 
@@ -74,14 +82,10 @@ class QueryTest(TestCase):
         result_cpb = self.find_by_id_query("contributionPlanBundle",
                                          self.test_contribution_plan_bundle.id,
                                          context=self.AnonymousUserContext())
-        result_cp = self.find_by_id_query("contributionPlan",
-                                         self.test_contribution_plan.id,
-                                         context=self.AnonymousUserContext())
         result_cpbd = self.find_by_id_query("contributionPlanBundleDetails",
                                          self.test_contribution_plan_details.id,
                                          context=self.AnonymousUserContext())
 
-        self.assertEqual(len(result_cp), 0)
         self.assertEqual(len(result_cpb), 0)
         self.assertEqual(len(result_cpbd), 0)
 
@@ -123,7 +127,6 @@ class QueryTest(TestCase):
           }}
         }}
         '''
-
         query_result = self.execute_query(query, context=context)
         records = query_result[query_type]['edges']
 
