@@ -34,8 +34,8 @@ def create_test_contribution_plan(product=None, calculation=ContributionValuatio
 
     object_data = {
         'is_deleted': False,
-        'code': "Contribution Plan Code",
-        'name': "Contribution Plan Name",
+        'code': "%s-%s-%d" % (product.code, calculation, periodicity),
+        'name': "Contribution Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
         'benefit_plan': product,
         'periodicity': periodicity,
         'calculation': calculation,
@@ -59,8 +59,8 @@ def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, 
 
     user = __get_or_create_simple_contribution_plan_user()
     object_data = {
-        'code': "%s-%s-%d" % (product.name, calculation, periodicity),
-        'name': "Contribution Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
+        'contribution_plan_bundle': contribution_plan_bundle,
+        'contribution_plan': contribution_plan,
         'json_ext': json.dumps("{}"),
         'date_created': date(2010, 10, 30),
         'user_updated': user,
@@ -85,7 +85,7 @@ def create_test_payment_plan(product=None, calculation=ContributionValuationRule
 
     object_data = {
         'is_deleted': False,
-        'code': "%s-%s-%d" % (product.name, calculation, periodicity),
+        'code': "%s-%s-%d" % (product.code, calculation, periodicity),
         'name': "Payment Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
         'benefit_plan': product,
         'periodicity': periodicity,
