@@ -26,7 +26,7 @@ def create_test_contribution_plan_bundle(custom_props={}):
     return contribution_plan_bundle
 
 
-def create_test_contribution_plan(product=None, calculation=ContributionValuationRule.uuid, custom_props={}):
+def create_test_contribution_plan(product=None, calculation=ContributionValuationRule.uuid, custom_props={}, periodicity = 12):
     if not product:
         product = create_test_product("PlanCode", custom_props={"insurance_period": 12,})
 
@@ -37,7 +37,7 @@ def create_test_contribution_plan(product=None, calculation=ContributionValuatio
         'code': "Contribution Plan Code",
         'name': "Contribution Plan Name",
         'benefit_plan': product,
-        'periodicity': 12,
+        'periodicity': periodicity,
         'calculation': calculation,
         'json_ext': json.dumps("{}"),
         **custom_props
@@ -59,8 +59,8 @@ def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, 
 
     user = __get_or_create_simple_contribution_plan_user()
     object_data = {
-        'contribution_plan_bundle': contribution_plan_bundle,
-        'contribution_plan': contribution_plan,
+        'code': "%s-%s-%d" % (product.name, calculation, periodicity),
+        'name': "Contribution Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
         'json_ext': json.dumps("{}"),
         'date_created': date(2010, 10, 30),
         'user_updated': user,
@@ -77,7 +77,7 @@ def create_test_contribution_plan_bundle_details(contribution_plan_bundle=None, 
     return contribution_plan_bundle_details
 
 
-def create_test_payment_plan(product=None, calculation=ContributionValuationRule.uuid, custom_props={}):
+def create_test_payment_plan(product=None, calculation=ContributionValuationRule.uuid, custom_props={}, periodicity = 1):
     if not product:
         product = create_test_product("PlanCode", custom_props={"insurance_period": 12,})
 
@@ -85,10 +85,10 @@ def create_test_payment_plan(product=None, calculation=ContributionValuationRule
 
     object_data = {
         'is_deleted': False,
-        'code': "Payment Plan Code",
-        'name': "Payment Plan Name",
+        'code': "%s-%s-%d" % (product.name, calculation, periodicity),
+        'name': "Payment Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
         'benefit_plan': product,
-        'periodicity': 12,
+        'periodicity': periodicity,
         'calculation': calculation,
         'json_ext': json.dumps("{}"),
         **custom_props
