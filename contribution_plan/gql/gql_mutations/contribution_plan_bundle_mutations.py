@@ -15,8 +15,7 @@ from contribution_plan.gql.gql_mutations import (
 )
 from contribution_plan.models import (
     ContributionPlanBundle,
-    ContributionPlanBundleDetails,
-    ContributionPlanBundleMutation
+    ContributionPlanBundleDetails
 )
 from contribution_plan.services import ContributionPlanBundleDetails as ContributionPlanBundleDetailsService
 
