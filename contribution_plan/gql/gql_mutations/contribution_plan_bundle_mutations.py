@@ -34,12 +34,6 @@ class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, 
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
 
-    @classmethod
-    def _mutate(cls, user, **data):
-        if "date_valid_to" not in data:
-            data['date_valid_to'] = None
-        super()._mutate(user, **data)
-
     class Input(ContributionPlanBundleUpdateInputType):
         pass
 
