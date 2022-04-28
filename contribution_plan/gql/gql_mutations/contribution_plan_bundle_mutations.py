@@ -70,19 +70,27 @@ class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin
         new_cpb = ContributionPlanBundle.objects.filter(id=old_cpb.replacement_uuid, is_deleted=False).first()
         if new_cpb:
             for cpbd in list_cpbd:
-                cls._attach_contribution_plan_to_new_version_of_bundle(user, cpbd.contribution_plan.id, new_cpb.id)
+                cls._attach_contribution_plan_to_new_version_of_bundle(
+                    user,
+                    cpbd.contribution_plan.id,
+                    new_cpb.id,
+                    new_cpb.date_valid_from,
+                    new_cpb.date_valid_to
+                )
 
     @classmethod
-    def _create_payload_cpbd(cls, cp_uuid, cpb_uuid):
+    def _create_payload_cpbd(cls, cp_uuid, cpb_uuid, date_valid_from, date_valid_to):
         return {
             "contribution_plan_id": f"{cp_uuid}",
             "contribution_plan_bundle_id": f"{cpb_uuid}",
+            "date_valid_from": date_valid_from,
+            "date_valid_to": date_valid_to
         }
 
     @classmethod
-    def _attach_contribution_plan_to_new_version_of_bundle(cls, user, cp_uuid, cpb_uuid):
+    def _attach_contribution_plan_to_new_version_of_bundle(cls, user, cp_uuid, cpb_uuid, valid_from, valid_to):
         cpbd_service = ContributionPlanBundleDetailsService(user)
-        payload_cpbd = cls._create_payload_cpbd(cp_uuid, cpb_uuid)
+        payload_cpbd = cls._create_payload_cpbd(cp_uuid, cpb_uuid, valid_from, valid_to)
         response = cpbd_service.create(payload_cpbd)
         return response
 
