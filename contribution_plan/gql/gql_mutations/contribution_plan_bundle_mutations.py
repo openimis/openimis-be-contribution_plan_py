@@ -100,7 +100,6 @@ class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin
             old_cpbd.date_valid_to
         )
         response = cpbd_service.update(payload_update_cpbd)
-        print(response)
         return response
 
     @classmethod
