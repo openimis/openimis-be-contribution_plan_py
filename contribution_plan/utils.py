@@ -3,10 +3,10 @@ import json
 from contribution_plan.models import GenericPlan
 
 
-def obtain_calcrule_params(payment_plan: GenericPlan,
+def obtain_calcrule_params(plan: GenericPlan,
     integer_param_list: list, none_integer_param_list: list) -> dict:
     # obtaining payment plan params saved in payment plan json_ext fields
-    pp_params = payment_plan.json_ext
+    pp_params = plan.json_ext
     if isinstance(pp_params, str):
         pp_params = json.loads(pp_params)
     if pp_params:
