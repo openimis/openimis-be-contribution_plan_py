@@ -11,11 +11,11 @@ def obtain_calcrule_params(plan: GenericPlan,
         pp_params = json.loads(pp_params)
     if pp_params:
         pp_params = pp_params["calculation_rule"] if "calculation_rule" in pp_params else None
-    # correct empty string values
 
+    # correct empty string values
     for key in integer_param_list:
-        if key in pp_params.items():
-            value = pp_params.items()[f'{key}']
+        if key in pp_params.keys():
+            value = pp_params[f'{key}']
             if value == "":
                 pp_params[f'{key}'] = 0
             else:
@@ -26,5 +26,4 @@ def obtain_calcrule_params(plan: GenericPlan,
     for key in none_integer_param_list:
         if key not in pp_params.items():
             pp_params[f'{key}'] = None
-
     return pp_params
