@@ -26,4 +26,8 @@ def obtain_calcrule_params(plan: GenericPlan,
     for key in none_integer_param_list:
         if key not in pp_params.keys():
             pp_params[f'{key}'] = None
+        else:
+            value = pp_params[f'{key}']
+            if value == "null":
+                pp_params[f'{key}'] = None
     return pp_params
