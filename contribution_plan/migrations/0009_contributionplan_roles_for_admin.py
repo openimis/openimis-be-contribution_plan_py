@@ -2,66 +2,22 @@ import logging
 
 from django.db import migrations
 
+from core.utils import insert_role_right_for_system
+
 logger = logging.getLogger(__name__)
 
 
-MIGRATION_SQL = """
-    /* Contribution plan and bundle*/
-    DECLARE @SystemRole INT
-    SELECT @SystemRole = role.RoleID from tblRole role where IsSystem=64;
-    /* Contribution plan bundle*/
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151101)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151101, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151102)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151102, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151103)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151103, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151104)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151104, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151106)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151106, CURRENT_TIMESTAMP)
-    END 
-    /* Contribution plan */
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151201)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151201, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151202)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151202, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151203)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151203, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151204)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151204, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 151206)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 151206, CURRENT_TIMESTAMP)
-    END 
-"""
+def add_rights(apps, schema_editor):
+    insert_role_right_for_system(64, 151101)  # Contribution plan and bundle
+    insert_role_right_for_system(64, 153002)  # update
+    insert_role_right_for_system(64, 153003)  # delete
+    insert_role_right_for_system(64, 153004)  # update
+    insert_role_right_for_system(64, 153006)  # update
+    insert_role_right_for_system(64, 151201)  # Contribution plan
+    insert_role_right_for_system(64, 151202)  # Contribution plan
+    insert_role_right_for_system(64, 151203)  # Contribution plan
+    insert_role_right_for_system(64, 151204)  # Contribution plan
+    insert_role_right_for_system(64, 151206)  # Contribution plan
 
 
 class Migration(migrations.Migration):
@@ -70,5 +26,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(sql=MIGRATION_SQL),
+        migrations.RunPython(add_rights),
     ]
