@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 def add_rights(apps, schema_editor):
     insert_role_right_for_system(64, 151101)  # Contribution plan and bundle
-    insert_role_right_for_system(64, 153002)  # update
-    insert_role_right_for_system(64, 153003)  # delete
-    insert_role_right_for_system(64, 153004)  # update
-    insert_role_right_for_system(64, 153006)  # update
+    insert_role_right_for_system(64, 151102)  # update
+    insert_role_right_for_system(64, 151103)  # delete
+    insert_role_right_for_system(64, 151104)  # update
+    insert_role_right_for_system(64, 151106)  # update
     insert_role_right_for_system(64, 151201)  # Contribution plan
     insert_role_right_for_system(64, 151202)  # Contribution plan
     insert_role_right_for_system(64, 151203)  # Contribution plan
