@@ -5,7 +5,6 @@ import dirtyfields.dirtyfields
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import jsonfallback.fields
 import simple_history.models
 
 
@@ -24,7 +23,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', default=None, editable=False, primary_key=True, serialize=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),
@@ -48,7 +47,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', default=None, editable=False, primary_key=True, serialize=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),
@@ -70,7 +69,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', db_index=True, default=None, editable=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),
@@ -99,7 +98,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', db_index=True, default=None, editable=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),
@@ -128,7 +127,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', db_index=True, default=None, editable=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),
@@ -159,7 +158,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(db_column='UUID', default=None, editable=False, primary_key=True, serialize=False)),
                 ('is_deleted', models.BooleanField(db_column='isDeleted', default=False)),
-                ('json_ext', jsonfallback.fields.FallbackJSONField(blank=True, db_column='Json_ext', null=True)),
+                ('json_ext', models.JSONField(blank=True, db_column='Json_ext', null=True)),
                 ('date_created', models.DateTimeField(db_column='DateCreated', null=True)),
                 ('date_updated', models.DateTimeField(db_column='DateUpdated', null=True)),
                 ('version', models.IntegerField(default=1)),

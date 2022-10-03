@@ -2,39 +2,17 @@ import logging
 
 from django.db import migrations
 
+from core.utils import insert_role_right_for_system
+
 logger = logging.getLogger(__name__)
 
 
-MIGRATION_SQL = """
-    DECLARE @SystemRole INT
-    SELECT @SystemRole = role.RoleID from tblRole role where IsSystem=64;
-    /* Payment plan */
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 157101)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 157101, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 157102)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 157102, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 157103)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 157103, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 157104)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 157104, CURRENT_TIMESTAMP)
-    END 
-    IF NOT EXISTS (SELECT * FROM [tblRoleRight] WHERE [RoleID] = @SystemRole AND [RightID] = 157106)
-    BEGIN
-        INSERT [dbo].[tblRoleRight] ([RoleID], [RightID], [ValidityFrom]) 
-        VALUES (@SystemRole, 157106, CURRENT_TIMESTAMP)
-    END 
-"""
+def add_rights(apps, schema_editor):
+    insert_role_right_for_system(64, 157101)  # Payment plan
+    insert_role_right_for_system(64, 157102)
+    insert_role_right_for_system(64, 157103)
+    insert_role_right_for_system(64, 157104)
+    insert_role_right_for_system(64, 157106)
 
 
 class Migration(migrations.Migration):
@@ -43,5 +21,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(MIGRATION_SQL)
+        migrations.RunPython(add_rights),
     ]
