@@ -96,7 +96,6 @@ class Query(graphene.ObjectType):
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
-
     def resolve_payment_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_paymentplan_perms):
            raise PermissionError("Unauthorized")
@@ -126,6 +125,7 @@ class Mutation(graphene.ObjectType):
     replace_contribution_plan = ReplaceContributionPlanMutation.Field()
     replace_contribution_plan_bundle_details = ReplaceContributionPlanBundleDetailsMutation.Field()
     replace_payment_plan = ReplacePaymentPlanMutation.Field()
+
 
 def on_contribution_plan_mutation(sender, **kwargs):
     uuid = kwargs['data'].get('uuid', None)

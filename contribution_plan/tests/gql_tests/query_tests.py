@@ -1,15 +1,16 @@
-import datetime
-import numbers
-import base64
-from unittest import mock
-from django.test import TestCase
-from uuid import UUID
-
 import graphene
-from contribution_plan.tests.helpers import *
-from contribution_plan import schema as contribution_plan_schema
+import datetime
+import base64
+
+from django.contrib.auth.models import AnonymousUser
+from django.test import TestCase
 from graphene import Schema
 from graphene.test import Client
+from unittest import mock
+from uuid import UUID
+
+from contribution_plan.tests.helpers import *
+from contribution_plan import schema as contribution_plan_schema
 
 
 class QueryTest(TestCase):
@@ -19,7 +20,7 @@ class QueryTest(TestCase):
         user.has_perm = mock.MagicMock(return_value=False)
 
     class AnonymousUserContext:
-        user = mock.Mock(is_anonymous=True)
+        user = AnonymousUser()
 
     @classmethod
     def setUpClass(cls):
@@ -79,15 +80,17 @@ class QueryTest(TestCase):
         self.assertDictEqual(result[0]['node'], params)
 
     def test_find_contribution_plan_bundle_existing_anonymous_user(self):
-        result_cpb = self.find_by_id_query("contributionPlanBundle",
-                                         self.test_contribution_plan_bundle.id,
-                                         context=self.AnonymousUserContext())
-        result_cpbd = self.find_by_id_query("contributionPlanBundleDetails",
-                                         self.test_contribution_plan_details.id,
-                                         context=self.AnonymousUserContext())
+        result_cpb = self.find_by_id_query_anonymous_context(
+            "contributionPlanBundle",
+            self.test_contribution_plan_bundle.id,
+        )
+        result_cpbd = self.find_by_id_query_anonymous_context(
+            "contributionPlanBundleDetails",
+            self.test_contribution_plan_details.id,
+        )
 
-        self.assertEqual(len(result_cpb), 0)
-        self.assertEqual(len(result_cpbd), 0)
+        self.assertEqual(result_cpb[0]['message'], 'Unauthorized')
+        self.assertEqual(result_cpbd[0]['message'], 'Unauthorized')
 
     def test_find_contribution_plan_details_by_contribution(self):
         details_contribution_bundle_id = self.test_contribution_plan_details.contribution_plan_bundle.id
@@ -154,12 +157,34 @@ class QueryTest(TestCase):
         records = query_result[query_type]['edges']
         return records
 
+    def find_by_id_query_anonymous_context(self, query_type, id):
+        query = F'''
+        {{
+            {query_type}(id:"{id}") {{
+                totalCount
+                edges {{
+                  node {{
+                    id
+                  }}
+                  cursor
+                }}
+          }}
+        }}
+        '''
+        query_result = self.execute_query_anonymous_context(query)
+        return query_result
+
     def execute_query(self, query, context=None):
         if context is None:
             context = self.BaseTestContext()
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
+        return query_data
+
+    def execute_query_anonymous_context(self, query):
+        query_result = self.graph_client.execute(query, context_value=self.AnonymousUserContext())
+        query_data = query_result['errors']
         return query_data
 
     def build_params(self, params):

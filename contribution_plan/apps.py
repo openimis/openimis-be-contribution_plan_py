@@ -56,7 +56,7 @@ class ContributionPlanConfig(AppConfig):
     gql_mutation_delete_paymentplan_perms = []
     gql_mutation_replace_paymentplan_perms = []
 
-    def _configure_permissions(selfself, cfg):
+    def _configure_permissions(self, cfg):
         ContributionPlanConfig.gql_query_contributionplanbundle_perms = cfg[
             "gql_query_contributionplanbundle_perms"]
         ContributionPlanConfig.gql_query_contributionplanbundle_admins_perms = cfg[
