@@ -9,6 +9,7 @@ class ContributionPlanBundleInputType(OpenIMISMutation.Input):
     code = graphene.String(required=True, max_length=32)
     name = graphene.String(required=False, max_length=255)
     periodicity = graphene.Int(required=False)
+    json_ext = graphene.types.json.JSONString(required=False)
     date_valid_from = graphene.Date(required=False)
     date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
