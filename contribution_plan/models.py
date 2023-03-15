@@ -75,7 +75,6 @@ class ContributionPlan(GenericPlan):
     class Meta:
         db_table = 'tblContributionPlan'
 
-
 class PaymentPlan(GenericPlan):
 
     class Meta:
