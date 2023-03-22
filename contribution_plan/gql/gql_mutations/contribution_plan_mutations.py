@@ -1,5 +1,6 @@
 from contribution_plan.apps import ContributionPlanConfig
 from core.gql.gql_mutations import DeleteInputType
+from contribution_plan.services import ContributionPlanService
 from core.gql.gql_mutations.base_mutation import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
     BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
     BaseHistoryModelDeleteMutationMixin, BaseHistoryModelReplaceMutationMixin
@@ -7,7 +8,7 @@ from contribution_plan.gql.gql_mutations import ContributionPlanInputType, Contr
     ContributionPlanReplaceInputType
 from contribution_plan.models import ContributionPlan
 from django.utils.translation import gettext as _
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 
 
 class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -23,6 +24,8 @@ class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMu
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_create_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+        if ContributionPlanService.check_unique_code(data['code']):
+            raise ValidationError(_("mutation.cp_code_duplicated"))
 
 
 class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
