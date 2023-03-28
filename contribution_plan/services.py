@@ -100,7 +100,7 @@ class ContributionPlanService(object):
         return []
 
 
-class ContributionPlanBundle(object):
+class ContributionPlanBundleService(object):
 
     def __init__(self, user):
         self.user = user
@@ -171,6 +171,14 @@ class ContributionPlanBundle(object):
             "old_object": json.loads(json.dumps(dict_representation, cls=DjangoJSONEncoder)),
             "uuid_new_object": str(cpb_to_replace.replacement_uuid),
         }
+
+    @staticmethod
+    def check_unique_code(code):
+        if ContributionPlanBundleModel.objects.filter(code=code, is_deleted=0).exists():
+            return [{"message": "Contribution plan bundle code %s already exists" % code}]
+        return []
+
+
 
 
 class ContributionPlanBundleDetails(object):
