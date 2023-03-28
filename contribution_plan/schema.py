@@ -4,6 +4,7 @@ import graphene_django_optimizer as gql_optimizer
 from core.schema import signal_mutation_module_validate
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
+from contribution_plan.services import ContributionPlanService
 from core.utils import append_validity_filter
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
@@ -56,6 +57,12 @@ class Query(graphene.ObjectType):
         applyDefaultValidityFilter=graphene.Boolean()
     )
 
+    validate_contribution_plan_code = graphene.Field(
+        graphene.Boolean,
+        contribution_plan_code=graphene.String(required=True),
+        description="Checks that the specified contribution plan code is unique."
+    )
+
     def resolve_contribution_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
            raise PermissionError("Unauthorized")
@@ -103,6 +110,10 @@ class Query(graphene.ObjectType):
         filters = append_validity_filter(**kwargs)
         query = PaymentPlan.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)
+
+    def resolve_validate_contribution_plan_code(self, info, **kwargs):
+        errors = ContributionPlanService.check_unique_code(code=kwargs['contribution_plan_code'])
+        return False if errors else True
 
 
 class Mutation(graphene.ObjectType):

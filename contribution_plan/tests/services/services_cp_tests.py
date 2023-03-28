@@ -1,5 +1,5 @@
 from django.test import TestCase
-from contribution_plan.services import ContributionPlan as ContributionPlanService, \
+from contribution_plan.services import ContributionPlanService, \
     ContributionPlanBundle as ContributionPlanBundleService, \
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsService, PaymentPlan as PaymentPlanService
 from contribution_plan.models import ContributionPlan, ContributionPlanBundle, \
