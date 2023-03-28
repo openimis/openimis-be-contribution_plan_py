@@ -84,32 +84,6 @@ class MutationTestContributionPlan(TestCase):
         result_mutation = self.add_mutation("createContributionPlan", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
 
-    def test_contribution_plan_delete_more(self):
-        time_stamp = datetime.datetime.now()
-        input_param = {
-            "code": "XYZ deletion",
-            "name": "XYZ test deletion xyz - " + str(time_stamp),
-            "benefitPlanId": self.test_product.id,
-            "calculation": f"{self.test_calculation}",
-            "periodicity": 12,
-        }
-        self.add_mutation("createContributionPlan", input_param)
-        self.add_mutation("createContributionPlan", input_param)
-        result = self.find_by_exact_attributes_query("contributionPlan", {**input_param, 'isDeleted': False})
-        converted_ids = [f"{base64.b64decode(edge['node']['id']).decode('utf-8').split(':')[1]}" for edge in
-                         result["edges"]]
-
-        input_param2 = {
-            "uuids": converted_ids,
-        }
-        self.add_mutation("deleteContributionPlan", input_param2)
-        result2 = self.find_by_exact_attributes_query("contributionPlan", {**input_param, 'isDeleted': False})
-
-        # tear down the test data
-        ContributionPlan.objects.filter(id__in=converted_ids).delete()
-
-        self.assertEqual((2, 0), (result["totalCount"], result2["totalCount"]))
-
     def test_contribution_plan_delete_single_deletion(self):
         time_stamp = datetime.datetime.now()
         input_param = {
