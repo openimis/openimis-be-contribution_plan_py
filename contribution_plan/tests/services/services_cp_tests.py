@@ -1,6 +1,6 @@
 from django.test import TestCase
 from contribution_plan.services import ContributionPlanService, \
-    ContributionPlanBundle as ContributionPlanBundleService, \
+    ContributionPlanBundleService, \
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsService, PaymentPlan as PaymentPlanService
 from contribution_plan.models import ContributionPlan, ContributionPlanBundle, \
     ContributionPlanBundleDetails, PaymentPlan
