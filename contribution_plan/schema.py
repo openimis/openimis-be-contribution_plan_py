@@ -4,7 +4,7 @@ import graphene_django_optimizer as gql_optimizer
 from core.schema import signal_mutation_module_validate
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
-from contribution_plan.services import ContributionPlanService
+from contribution_plan.services import ContributionPlanService, PaymentPlan as PaymentPlanService
 from core.utils import append_validity_filter
 from contribution_plan.gql.gql_mutations.contribution_plan_bundle_details_mutations import \
     CreateContributionPlanBundleDetailsMutation, UpdateContributionPlanBundleDetailsMutation, \
@@ -20,7 +20,7 @@ from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
 from core.schema import OrderedDjangoFilterConnectionField
 from .models import ContributionPlanMutation, ContributionPlanBundleMutation
 from .apps import ContributionPlanConfig
-
+from contribution_plan.models import PaymentPlan as PaymentPlanModel
 
 class Query(graphene.ObjectType):
     contribution_plan = OrderedDjangoFilterConnectionField(
@@ -61,6 +61,12 @@ class Query(graphene.ObjectType):
         graphene.Boolean,
         contribution_plan_code=graphene.String(required=True),
         description="Checks that the specified contribution plan code is unique."
+    )
+
+    validate_payment_plan_code = graphene.Field(
+        graphene.Boolean,
+        payment_plan_code=graphene.String(required=True),
+        description="Check that the specified payment plan code is unique"
     )
 
     def resolve_contribution_plan(self, info, **kwargs):
@@ -113,6 +119,10 @@ class Query(graphene.ObjectType):
 
     def resolve_validate_contribution_plan_code(self, info, **kwargs):
         errors = ContributionPlanService.check_unique_code(code=kwargs['contribution_plan_code'])
+        return False if errors else True
+
+    def resolve_validate_payment_plan_code(self, info, **kwargs):
+        errors = PaymentPlanService.check_unique_code(code=kwargs['payment_plan_code'])
         return False if errors else True
 
 
