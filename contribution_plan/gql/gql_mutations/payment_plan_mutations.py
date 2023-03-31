@@ -9,6 +9,7 @@ from contribution_plan.apps import ContributionPlanConfig
 from contribution_plan.models import PaymentPlan
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 
 class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -20,9 +21,9 @@ class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutatio
     def _validate_mutation(cls, user, **data):
         if type(user) is AnonymousUser or not user.id or not user.has_perms(
                 ContributionPlanConfig.gql_mutation_create_paymentplan_perms):
-            raise ValidationError("mutation.authentication_required")
+            raise ValidationError(_("mutation.authentication_required"))
         if PaymentPlanService.check_unique_code(data['code']):
-            raise ValidationError("mutation.payment_plan_code_duplicated")
+            raise ValidationError(_("mutation.payment_plan_code_duplicated"))
 
     class Input(PaymentPlanInputType):
         pass
@@ -37,9 +38,9 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
     def _validate_mutation(cls, user, **data):
         if type(user) is AnonymousUser or not user.id or not user.has_perms(
                 ContributionPlanConfig.gql_mutation_update_paymentplan_perms):
-            raise ValidationError("mutation.authentication_required")
+            raise ValidationError(_("mutation.authentication_required"))
         if PaymentPlanService.check_unique_code(data['code']):
-            raise ValidationError("mutation.payment_plan_code_duplicated")
+            raise ValidationError(_("mutation.payment_plan_code_duplicated"))
 
     class Input(PaymentPlanUpdateInputType):
         pass
@@ -54,7 +55,7 @@ class DeletePaymentPlanMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteM
     def _validate_mutation(cls, user, **data):
         if type(user) is AnonymousUser or not user.id or not user.has_perms(
                 ContributionPlanConfig.gql_mutation_delete_paymentplan_perms):
-            raise ValidationError("mutation.authentication_required")
+            raise ValidationError(_("mutation.authentication_required"))
 
     class Input(DeleteInputType):
         pass
@@ -69,7 +70,7 @@ class ReplacePaymentPlanMutation(BaseHistoryModelReplaceMutationMixin, BaseRepla
     def _validate_mutation(cls, user, **data):
         if type(user) is AnonymousUser or not user.id or not user.has_perms(
                 ContributionPlanConfig.gql_mutation_replace_paymentplan_perms):
-            raise ValidationError("mutation.authentication_required")
+            raise ValidationError(_("mutation.authentication_required"))
 
     class Input(PaymentPlanReplaceInputType):
         pass
