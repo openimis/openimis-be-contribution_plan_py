@@ -307,10 +307,6 @@ class PaymentPlan(object):
             return [{"message": "Payment plan code %s already exists" % code}]
         return []
 
-    @staticmethod
-    def say_hi():
-        print("hi")
-
 
 def _output_exception(model_name, method, exception):
     return {
