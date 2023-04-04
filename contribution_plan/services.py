@@ -309,6 +309,12 @@ class PaymentPlan(object):
             "uuid_new_object": str(pp_to_replace.replacement_uuid),
         }
 
+    @staticmethod
+    def check_unique_code(code):
+        if PaymentPlanModel.objects.filter(code=code, is_deleted=False).exists():
+            return [{"message": "Payment plan code %s already exists" % code}]
+        return []
+
 
 def _output_exception(model_name, method, exception):
     return {
