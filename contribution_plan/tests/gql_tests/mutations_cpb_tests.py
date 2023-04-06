@@ -143,10 +143,9 @@ class MutationTestContributionPlanBundle(TestCase):
             (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
         )
 
-    def test_contribution_plan_bundle_update_5_update_field_code_not_editable(self):
+    def test_contribution_plan_bundle_update_5_update_field_code_editable(self):
         id = self.test_contribution_plan_bundle.id
         code = "Code002"
-        version = self.test_contribution_plan_bundle.version
         input_param = {
             "id": f"{id}",
             "code": f"{code}",
