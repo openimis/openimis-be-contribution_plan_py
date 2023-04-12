@@ -143,20 +143,15 @@ class MutationTestContributionPlanBundle(TestCase):
             (result[0]['node']['name'], result[0]['node']['version'], result[0]['node']['dateValidFrom'])
         )
 
-    def test_contribution_plan_bundle_update_5_update_field_code_editable(self):
+    def test_contribution_plan_bundle_update_5_update_field_code_not_editable(self):
         id = self.test_contribution_plan_bundle.id
-        code = "Code002"
+        version = self.test_contribution_plan_bundle.version
         input_param = {
             "id": f"{id}",
-            "code": f"{code}",
+            "code": "XYZ test name xxxxx",
         }
         result_mutation = self.add_mutation("updateContributionPlanBundle", input_param)
-        contribution_plan_bundle = self.find_by_exact_attributes_query("contributionPlanBundle", {**input_param})["edges"]
-        self.assertEqual(False, 'errors' in result_mutation)
-        self.assertEqual(
-            f"{code}",
-            contribution_plan_bundle[0]["node"]["code"]
-        )
+        self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_bundle_update_6_without_id_field(self):
         id = self.test_contribution_plan_bundle.id
