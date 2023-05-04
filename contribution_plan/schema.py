@@ -29,7 +29,8 @@ class Query(graphene.ObjectType):
         orderBy=graphene.List(of_type=graphene.String),
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
-        applyDefaultValidityFilter=graphene.Boolean()
+        applyDefaultValidityFilter=graphene.Boolean(),
+        showHistory=graphene.Boolean()
     )
 
     contribution_plan_bundle = OrderedDjangoFilterConnectionField(
@@ -39,7 +40,8 @@ class Query(graphene.ObjectType):
         insuranceProduct=graphene.Int(),
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
-        applyDefaultValidityFilter=graphene.Boolean()
+        applyDefaultValidityFilter=graphene.Boolean(),
+        showHistory=graphene.Boolean()
     )
 
     contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
@@ -55,7 +57,8 @@ class Query(graphene.ObjectType):
         orderBy=graphene.List(of_type=graphene.String),
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
-        applyDefaultValidityFilter=graphene.Boolean()
+        applyDefaultValidityFilter=graphene.Boolean(),
+        showHistory=graphene.Boolean()
     )
 
     validate_contribution_plan_code = graphene.Field(
@@ -81,18 +84,27 @@ class Query(graphene.ObjectType):
            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
-        query = ContributionPlan.objects
-        return gql_optimizer.query(query.filter(*filters).all(), info)
+        model = ContributionPlan
+        if kwargs.get('showHistory', False):
+            query = model.history.filter(*filters).all().as_instances()
+        else:
+            query = model.objects.filter(*filters).all()
+        return gql_optimizer.query(query, info)
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplanbundle_perms):
            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
-        query = ContributionPlanBundle.objects
 
         calculation = kwargs.get('calculation', None)
         insurance_product = kwargs.get('insuranceProduct', None)
+        
+        model = ContributionPlanBundle
+        if kwargs.get('showHistory', False):
+            query = model.history.filter(*filters).all().as_instances()
+        else:
+            query = model.objects.filter(*filters).all()
 
         if calculation:
             query = query.filter(
@@ -121,8 +133,12 @@ class Query(graphene.ObjectType):
            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
-        query = PaymentPlan.objects
-        return gql_optimizer.query(query.filter(*filters).all(), info)
+        model = PaymentPlan
+        if kwargs.get('showHistory', False):
+            query = model.history.filter(*filters).all().as_instances()
+        else:
+            query = model.objects.filter(*filters).all()
+        return gql_optimizer.query(query, info)
 
     def resolve_validate_contribution_plan_code(self, info, **kwargs):
         errors = ContributionPlanService.check_unique_code(code=kwargs['contribution_plan_code'])
