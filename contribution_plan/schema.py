@@ -96,34 +96,48 @@ class Query(graphene.ObjectType):
            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
-
         calculation = kwargs.get('calculation', None)
         insurance_product = kwargs.get('insuranceProduct', None)
-        
         model = ContributionPlanBundle
         if kwargs.get('showHistory', False):
             query = model.history.filter(*filters).all().as_instances()
         else:
             query = model.objects.filter(*filters).all()
 
+        # for ojb in ContributionPlanBundle.history.all().as_instances():
+        #     print(ContributionPlanBundle.objects.filter(id=ojb.pk))
+        lista_idkow = []
+        for i in query.values('id'):
+            print(i['id'])
+            lista_idkow.append(i['id'])
+
+        query_cpbd = ContributionPlanBundleDetails.objects.filter(contribution_plan_bundle__in=lista_idkow)
+        print(query_cpbd)
+
         if calculation:
-            query = query.filter(
-                contributionplanbundledetails__contribution_plan__calculation=str(calculation)
-            ).distinct()
+            query_cpbd = query_cpbd.filter(contribution_plan__calculation=str(calculation)).distinct()
 
         if insurance_product:
-            query = query.filter(
-                contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
-            ).distinct()
+            query_cpbd = query_cpbd.filter(contribution_plan__benefit_plan__id=insurance_product).distinct()
 
-        return gql_optimizer.query(query.filter(*filters).all(), info)
+        lista_idkow2 = []
+        print("cos")
+        for i in query_cpbd.values('contribution_plan_bundle'):
+            print("tuuut", i)
+            lista_idkow2.append(i['contribution_plan_bundle'])
+
+        print(query_cpbd)
+        print(lista_idkow2)
+
+        query = ContributionPlanBundle.objects.filter(id__in=lista_idkow2)
+
+        return query.all()
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):
         if not (info.context.user.has_perms(
                 ContributionPlanConfig.gql_query_contributionplanbundle_perms) and info.context.user.has_perms(
                 ContributionPlanConfig.gql_query_contributionplan_perms)):
            raise PermissionError("Unauthorized")
-
         filters = append_validity_filter(**kwargs)
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)
