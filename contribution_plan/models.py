@@ -1,9 +1,10 @@
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from core import models as core_models, fields
 from core.signals import Signal
 from graphql import ResolveInfo
-from product.models import Product
 from contribution_plan.mixins import GenericPlanQuerysetMixin, GenericPlanManager
 
 
@@ -11,7 +12,9 @@ class GenericPlan(GenericPlanQuerysetMixin, core_models.HistoryBusinessModel):
     code = models.CharField(db_column="Code", max_length=255, blank=True, null=True)
     name = models.CharField(db_column="Name", max_length=255, blank=True, null=True)
     calculation = models.UUIDField(db_column="calculationUUID", null=False)
-    benefit_plan = models.ForeignKey(Product, db_column="BenefitPlanID", on_delete=models.deletion.DO_NOTHING)
+    benefit_plan_id = models.CharField(db_column="BenefitPlanID", max_length=255, blank=True, null=True)
+    benefit_plan_type = models.ForeignKey(ContentType, db_column="BenefitPlanType", on_delete=models.DO_NOTHING, null=True, unique=False)
+    benefit_plan = GenericForeignKey('benefit_plan_type', 'benefit_plan_id')
     periodicity = models.IntegerField(db_column="Periodicity", null=False)
 
     objects = GenericPlanManager()
