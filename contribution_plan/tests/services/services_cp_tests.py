@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from contribution_plan.services import ContributionPlanService, \
     ContributionPlanBundleService, \
@@ -8,6 +9,7 @@ from calculation.calculation_rule import ContributionValuationRule
 from core.models import User
 from contribution_plan.tests.helpers import create_test_contribution_plan, \
     create_test_contribution_plan_bundle
+from product.models import Product
 from product.test_helpers import create_test_product
 
 
@@ -29,12 +31,14 @@ class ServiceTestContributionPlan(TestCase):
         cls.contribution_plan = create_test_contribution_plan()
         cls.contribution_plan2 = create_test_contribution_plan()
         cls.calculation = ContributionValuationRule.uuid
+        cls.product_content_type = ContentType.objects.get_for_model(Product)
 
     def test_contribution_plan_create(self):
         contribution_plan = {
             'code': "CP SERVICE",
             'name': "Contribution Plan Name Service",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -65,7 +69,7 @@ class ServiceTestContributionPlan(TestCase):
                 response['data']['name'],
                 response['data']['version'],
                 response['data']['periodicity'],
-                response['data']['benefit_plan'],
+                response['data']['benefit_plan_id'],
                 response['data']['calculation'],
             )
         )
@@ -75,6 +79,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERVICE",
             'name': "Contribution Plan Name Service",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'calculation': str(self.calculation),
             'json_ext': {},
         }
@@ -96,6 +101,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -134,6 +140,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -146,6 +153,7 @@ class ServiceTestContributionPlan(TestCase):
             'id': str(contribution_plan_object.id),
             'periodicity': 3,
             'benefit_plan_id': self.test_product2.id,
+            'benefit_plan_type': self.product_content_type,
         }
         response = self.contribution_plan_service.update(contribution_plan_to_update)
 
@@ -167,7 +175,7 @@ class ServiceTestContributionPlan(TestCase):
                 response['detail'],
                 response['data']['periodicity'],
                 response['data']['version'],
-                response['data']['benefit_plan']
+                response['data']['benefit_plan_id']
             )
         )
 
@@ -176,6 +184,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CPUWCF",
             'name': "CP for update without changing fields",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -225,6 +234,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -267,6 +277,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -278,7 +289,8 @@ class ServiceTestContributionPlan(TestCase):
         contribution_plan_to_replace = {
             'uuid': str(contribution_plan_object.id),
             'periodicity': 3,
-            'benefit_plan_id': self.test_product2.id
+            'benefit_plan_id': self.test_product2.id,
+            'benefit_plan_type': self.product_content_type,
         }
 
         response = self.contribution_plan_service.replace(contribution_plan_to_replace)
@@ -312,6 +324,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -332,6 +345,7 @@ class ServiceTestContributionPlan(TestCase):
             'uuid': str(contribution_plan_object.id),
             'periodicity': 2,
             'benefit_plan_id': self.test_product2.id,
+            'benefit_plan_type': self.product_content_type,
         }
 
         response = self.contribution_plan_service.replace(contribution_plan_to_replace_again)
@@ -570,6 +584,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "CP SERUPD",
             'name': "CP for update",
             'benefit_plan_id': str(self.test_product.id),
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -613,6 +628,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "PP SERVICE",
             'name': "Payment Plan Name Service",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},
@@ -643,7 +659,7 @@ class ServiceTestContributionPlan(TestCase):
                 response['data']['name'],
                 response['data']['version'],
                 response['data']['periodicity'],
-                response['data']['benefit_plan'],
+                response['data']['benefit_plan_id'],
                 response['data']['calculation'],
             )
         )
@@ -653,6 +669,7 @@ class ServiceTestContributionPlan(TestCase):
             'code': "PP SERUPD",
             'name': "PP for update",
             'benefit_plan_id': self.test_product.id,
+            'benefit_plan_type': self.product_content_type,
             'periodicity': 6,
             'calculation': str(self.calculation),
             'json_ext': {},

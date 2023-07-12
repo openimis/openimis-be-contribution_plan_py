@@ -1,12 +1,37 @@
 import graphene
+from django.core.exceptions import PermissionDenied
+
+from contribution_plan.apps import ContributionPlanConfig
+from contribution_plan.gql.util import model_obj_to_json
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
     ContributionPlanBundleDetails, PaymentPlan
 from core import ExtendedConnection, prefix_filterset
 from graphene_django import DjangoObjectType
-from product.schema import ProductGQLType
+from django.utils.translation import gettext as _
 
 
 class ContributionPlanGQLType(DjangoObjectType):
+    benefit_plan = graphene.JSONString()
+    benefit_plan_type = graphene.Int()
+    benefit_plan_type_name = graphene.String()
+
+    @staticmethod
+    def resolve_benefit_plan_type(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_paymentplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return root.benefit_plan_type.id
+
+    @staticmethod
+    def resolve_benefit_plan_type_name(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return root.benefit_plan_type.name
+
+    @staticmethod
+    def resolve_benefit_plan(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return model_obj_to_json(root.benefit_plan)
 
     class Meta:
         model = ContributionPlan
@@ -16,7 +41,9 @@ class ContributionPlanGQLType(DjangoObjectType):
             "version": ["exact"],
             "code": ["exact", "istartswith", "icontains", "iexact"],
             "name": ["exact", "istartswith", "icontains", "iexact"],
-            **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
+            # **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
+            'benefit_plan_id': ["exact"],
+            'benefit_plan_type': ["exact"],
             "calculation": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
@@ -85,6 +112,27 @@ class ContributionPlanBundleDetailsGQLType(DjangoObjectType):
 
 
 class PaymentPlanGQLType(DjangoObjectType):
+    benefit_plan = graphene.JSONString()
+    benefit_plan_type = graphene.Int()
+    benefit_plan_type_name = graphene.String()
+
+    @staticmethod
+    def resolve_benefit_plan_type(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_paymentplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return root.benefit_plan_type.id
+
+    @staticmethod
+    def resolve_benefit_plan_type_name(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return root.benefit_plan_type.name
+
+    @staticmethod
+    def resolve_benefit_plan(root, info):
+        if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
+            raise PermissionDenied(_("unauthorized"))
+        return model_obj_to_json(root.benefit_plan)
 
     class Meta:
         model = PaymentPlan
@@ -94,7 +142,9 @@ class PaymentPlanGQLType(DjangoObjectType):
             "version": ["exact"],
             "code": ["exact", "istartswith", "icontains", "iexact"],
             "name": ["exact", "istartswith", "icontains", "iexact"],
-            **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
+            # **prefix_filterset("benefit_plan__", ProductGQLType._meta.filter_fields),
+            'benefit_plan_id': ["exact"],
+            'benefit_plan_type': ["exact"],
             "calculation": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
