@@ -13,6 +13,7 @@ class ContributionPlanBundleInputType(OpenIMISMutation.Input):
     date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
 
+
 class ContributionPlanBundleUpdateInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=True)
     name = graphene.String(required=False, max_length=255)
@@ -34,7 +35,8 @@ class ContributionPlanInputType(OpenIMISMutation.Input):
     code = graphene.String(required=True, max_length=32)
     name = graphene.String(required=True, max_lenght=255)
     calculation = graphene.UUID(required=True)
-    benefit_plan_id = graphene.Int(required=True)
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=True)
     date_valid_from = graphene.Date(required=False)
     date_valid_to = graphene.Date(required=False)
@@ -46,7 +48,8 @@ class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
     code = graphene.String(required=False, max_length=32)
     name = graphene.String(required=False, max_lenght=255)
     calculation = graphene.UUID(required=False)
-    benefit_plan_id = graphene.Int(required=False)
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=False)
     date_valid_to = graphene.Date(required=False)
@@ -56,7 +59,8 @@ class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
 class ContributionPlanReplaceInputType(ReplaceInputType):
     name = graphene.String(required=False, max_lenght=255)
     calculation = graphene.UUID(required=False)
-    benefit_plan_id = graphene.Int(required=False)
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=True)
     date_valid_to = graphene.Date(required=False)
