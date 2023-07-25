@@ -13,6 +13,7 @@ class ContributionPlanBundleInputType(OpenIMISMutation.Input):
     date_valid_to = graphene.Date(required=False)
     json_ext = graphene.types.json.JSONString(required=False)
 
+
 class ContributionPlanBundleUpdateInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=True)
     name = graphene.String(required=False, max_length=255)
@@ -88,12 +89,15 @@ class ContributionPlanBundleDetailsReplaceInputType(ReplaceInputType):
 
 
 class PaymentPlanInputType(ContributionPlanInputType):
-    pass
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
 
 
 class PaymentPlanUpdateInputType(ContributionPlanUpdateInputType):
-    pass
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
 
 
 class PaymentPlanReplaceInputType(ContributionPlanReplaceInputType):
-    pass
+    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_id = graphene.String(required=True)
