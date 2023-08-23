@@ -46,7 +46,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "code": "XYZ",
             "name": "XYZ test name xyz - " + str(time_stamp),
-            "benefitPlanId": self.test_product.id,
+            "benefitPlanId": f"{self.test_product.id}",
             "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
@@ -89,7 +89,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "code": "XYZ deletion",
             "name": "XYZ test deletion xyz - " + str(time_stamp),
-            "benefitPlanId": self.test_product.id,
+            "benefitPlanId": f"{self.test_product.id}",
             "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
@@ -113,6 +113,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
+            "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
@@ -129,6 +130,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
+            "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
@@ -145,7 +147,8 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
-            "dateValidFrom": "2020-12-10"
+            "dateValidFrom": "2020-12-10",
+            "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
@@ -162,6 +165,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
+            "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}"
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
@@ -177,6 +181,7 @@ class MutationTestContributionPlan(TestCase):
         version = self.test_contribution_plan.version
         input_param = {
             "name": "XYZ test name xxxxx",
+            "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}"
         }
         result_mutation = self.add_mutation("updateContributionPlan", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
