@@ -1,6 +1,8 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
 
+from django.db.models import Q
+
 from core.schema import signal_mutation_module_validate
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
@@ -41,7 +43,8 @@ class Query(graphene.ObjectType):
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
         applyDefaultValidityFilter=graphene.Boolean(),
-        showHistory=graphene.Boolean()
+        showHistory=graphene.Boolean(),
+        clientMutationId=graphene.String()
     )
 
     contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
@@ -100,6 +103,10 @@ class Query(graphene.ObjectType):
         insurance_product = kwargs.get('insuranceProduct')
         show_history = kwargs.get('showHistory')
         model = ContributionPlanBundle
+
+        client_mutation_id = kwargs.pop("clientMutationId", None)
+        if client_mutation_id:
+            filters.append(Q(mutations__mutation__client_mutation_id=client_mutation_id))
 
         if show_history:
             query = model.history.filter(*filters).all().as_instances()

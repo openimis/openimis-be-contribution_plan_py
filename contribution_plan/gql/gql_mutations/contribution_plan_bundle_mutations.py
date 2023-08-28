@@ -17,7 +17,7 @@ from contribution_plan.gql.gql_mutations import (
 )
 from contribution_plan.models import (
     ContributionPlanBundle,
-    ContributionPlanBundleDetails
+    ContributionPlanBundleDetails, ContributionPlanBundleMutation
 )
 from contribution_plan.services import (
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsService
@@ -33,6 +33,17 @@ class CreateContributionPlanBundleMutation(BaseHistoryModelCreateMutationMixin, 
 
     class Input(ContributionPlanBundleInputType):
         pass
+
+    @classmethod
+    def _mutate(cls, user, **data):
+        client_mutation_id = data.pop('client_mutation_id', None)
+        if "client_mutation_label" in data:
+            data.pop('client_mutation_label')
+        contribution_bundle = cls.create_object(user=user, object_data=data)
+        if client_mutation_id:
+            ContributionPlanBundleMutation.object_mutated(
+                user, client_mutation_id=client_mutation_id, contribution_plan_bundle=contribution_bundle
+            )
 
     @classmethod
     def _validate_mutation(cls, user, **data):
