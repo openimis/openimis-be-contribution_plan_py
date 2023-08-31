@@ -127,7 +127,7 @@ class ContributionPlanMutation(core_models.UUIDModel):
         db_table = "contribution_plan_ContributionPlanMutation"
 
 
-class ContributionPlanBundleMutation(core_models.UUIDModel):
+class ContributionPlanBundleMutation(core_models.UUIDModel, core_models.ObjectMutation):
     contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, models.DO_NOTHING,
                                  related_name='mutations')
     mutation = models.ForeignKey(
