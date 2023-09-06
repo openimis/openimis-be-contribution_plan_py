@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+    replaces=[('contribution_plan','0002_auto_20230126_0903')]
 
     dependencies = [
         ('contribution_plan', '0001_squashed_0010_payment_plan_roles_for_admin'),
