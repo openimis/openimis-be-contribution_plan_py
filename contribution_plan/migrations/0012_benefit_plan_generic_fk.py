@@ -16,6 +16,7 @@ def move_to_generic_fk(apps, schema_editor):
     apps.get_model('contribution_plan', 'historicalpaymentplan').objects.using(db_alias).update(benefit_plan_id=F('benefit_plan_temp'), benefit_plan_type=product_content_type)
 
 class Migration(migrations.Migration):
+    replaces=[('contribution_plan','0003_benefit_plan_generic_fk')]
     dependencies = [
         ('product', '0008_auto_20230510_1347'),
         ('contribution_plan', '0002_auto_20230126_0903'),
