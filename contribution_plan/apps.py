@@ -56,65 +56,12 @@ class ContributionPlanConfig(AppConfig):
     gql_mutation_delete_paymentplan_perms = []
     gql_mutation_replace_paymentplan_perms = []
 
-    def _configure_permissions(self, cfg):
-        ContributionPlanConfig.gql_query_contributionplanbundle_perms = cfg[
-            "gql_query_contributionplanbundle_perms"]
-        ContributionPlanConfig.gql_query_contributionplanbundle_admins_perms = cfg[
-            "gql_query_contributionplanbundle_admins_perms"
-        ]
-
-        ContributionPlanConfig.gql_query_contributionplan_perms = cfg[
-            "gql_query_contributionplan_perms"]
-        ContributionPlanConfig.gql_query_contributionplan_admins_perms = cfg[
-            "gql_query_contributionplan_admins_perms"
-        ]
-
-        ContributionPlanConfig.gql_query_paymentplan_perms = cfg[
-            "gql_query_paymentplan_perms"]
-        ContributionPlanConfig.gql_query_paymentplan_admins_perms = cfg[
-            "gql_query_paymentplan_admins_perms"
-        ]
-
-        ContributionPlanConfig.gql_mutation_create_contributionplanbundle_perms = cfg[
-            "gql_mutation_create_contributionplanbundle_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_update_contributionplanbundle_perms = cfg[
-            "gql_mutation_update_contributionplanbundle_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_delete_contributionplanbundle_perms = cfg[
-            "gql_mutation_delete_contributionplanbundle_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_replace_contributionplanbundle_perms = cfg[
-            "gql_mutation_replace_contributionplanbundle_perms"
-        ]
-
-        ContributionPlanConfig.gql_mutation_create_contributionplan_perms = cfg[
-            "gql_mutation_create_contributionplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_update_contributionplan_perms = cfg[
-            "gql_mutation_update_contributionplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_delete_contributionplan_perms = cfg[
-            "gql_mutation_delete_contributionplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_replace_contributionplan_perms = cfg[
-            "gql_mutation_replace_contributionplan_perms"
-        ]
-
-        ContributionPlanConfig.gql_mutation_create_paymentplan_perms = cfg[
-            "gql_mutation_create_paymentplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_update_paymentplan_perms = cfg[
-            "gql_mutation_update_paymentplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_delete_paymentplan_perms = cfg[
-            "gql_mutation_delete_paymentplan_perms"
-        ]
-        ContributionPlanConfig.gql_mutation_replace_paymentplan_perms = cfg[
-            "gql_mutation_replace_paymentplan_perms"
-        ]
+    def __load_config(self, cfg):
+        for field in cfg:
+            if hasattr(ContributionPlanConfig, field):
+                setattr(ContributionPlanConfig, field, cfg[field])
 
     def ready(self):
         from core.models import ModuleConfiguration
         cfg = ModuleConfiguration.get_or_default(MODULE_NAME, DEFAULT_CFG)
-        self._configure_permissions(cfg)
+        self.__load_config(cfg)
