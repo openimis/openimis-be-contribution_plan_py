@@ -21,7 +21,7 @@ def check_authentication(function):
     return wrapper
 
 
-class ContributionPlan(object):
+class ContributionPlanService(object):
 
     def __init__(self, user):
         self.user = user
@@ -93,8 +93,14 @@ class ContributionPlan(object):
             "uuid_new_object": str(cp_to_replace.replacement_uuid),
         }
 
+    @staticmethod
+    def check_unique_code(code):
+        if ContributionPlanModel.objects.filter(code=code, is_deleted=0).exists():
+            return [{"message": "Contribution plan code %s already exists" % code}]
+        return []
 
-class ContributionPlanBundle(object):
+
+class ContributionPlanBundleService(object):
 
     def __init__(self, user):
         self.user = user
@@ -165,6 +171,14 @@ class ContributionPlanBundle(object):
             "old_object": json.loads(json.dumps(dict_representation, cls=DjangoJSONEncoder)),
             "uuid_new_object": str(cpb_to_replace.replacement_uuid),
         }
+
+    @staticmethod
+    def check_unique_code(code):
+        if ContributionPlanBundleModel.objects.filter(code=code, is_deleted=0).exists():
+            return [{"message": "Contribution plan bundle code %s already exists" % code}]
+        return []
+
+
 
 
 class ContributionPlanBundleDetails(object):
@@ -294,6 +308,12 @@ class PaymentPlan(object):
             "old_object": json.loads(json.dumps(dict_representation, cls=DjangoJSONEncoder)),
             "uuid_new_object": str(pp_to_replace.replacement_uuid),
         }
+
+    @staticmethod
+    def check_unique_code(code):
+        if PaymentPlanModel.objects.filter(code=code, is_deleted=False).exists():
+            return [{"message": "Payment plan code %s already exists" % code}]
+        return []
 
 
 def _output_exception(model_name, method, exception):

@@ -1,3 +1,4 @@
+from contribution_plan.apps import ContributionPlanConfig
 from core.gql.gql_mutations import DeleteInputType
 from core.gql.gql_mutations.base_mutation  import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
     BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
@@ -5,6 +6,8 @@ from core.gql.gql_mutations.base_mutation  import BaseMutation, BaseDeleteMutati
 from contribution_plan.gql.gql_mutations import ContributionPlanBundleDetailsInputType, \
     ContributionPlanBundleDetailsUpdateInputType, ContributionPlanBundleDetailsReplaceInputType
 from contribution_plan.models import ContributionPlanBundleDetails
+from django.utils.translation import gettext as _
+from django.core.exceptions import PermissionDenied
 
 
 class CreateContributionPlanBundleDetailsMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -15,6 +18,13 @@ class CreateContributionPlanBundleDetailsMutation(BaseHistoryModelCreateMutation
     class Input(ContributionPlanBundleDetailsInputType):
         pass
 
+    @classmethod
+    def _validate_mutation(cls, user, **data):
+        super()._validate_mutation(user, **data)
+        if not user.has_perms(ContributionPlanConfig.gql_mutation_create_contributionplanbundle_perms):
+            raise PermissionDenied(_("unauthorized"))
+
+
 
 class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
@@ -23,6 +33,12 @@ class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutation
 
     class Input(ContributionPlanBundleDetailsUpdateInputType):
         pass
+
+    @classmethod
+    def _validate_mutation(cls, user, **data):
+        super()._validate_mutation(user, **data)
+        if not user.has_perms(ContributionPlanConfig.gql_mutation_update_contributionplanbundle_perms):
+            raise PermissionDenied(_("unauthorized"))
 
 
 class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
@@ -33,6 +49,12 @@ class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutation
     class Input(DeleteInputType):
         pass
 
+    @classmethod
+    def _validate_mutation(cls, user, **data):
+        super()._validate_mutation(user, **data)
+        if not user.has_perms(ContributionPlanConfig.gql_mutation_delete_contributionplanbundle_perms):
+            raise PermissionDenied(_("unauthorized"))
+
 
 class ReplaceContributionPlanBundleDetailsMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
@@ -41,3 +63,9 @@ class ReplaceContributionPlanBundleDetailsMutation(BaseHistoryModelReplaceMutati
 
     class Input(ContributionPlanBundleDetailsReplaceInputType):
         pass
+
+    @classmethod
+    def _validate_mutation(cls, user, **data):
+        super()._validate_mutation(user, **data)
+        if not user.has_perms(ContributionPlanConfig.gql_mutation_replace_contributionplanbundle_perms):
+            raise PermissionDenied(_("unauthorized"))
