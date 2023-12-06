@@ -50,6 +50,10 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
                 ContributionPlanConfig.gql_mutation_update_paymentplan_perms):
             raise ValidationError(_("mutation.authentication_required"))
 
+        if PaymentPlanService.check_unique_code(data['code']):
+            raise ValidationError(_("mutation.payment_plan_code_duplicated"))
+
+
     @classmethod
     def _mutate(cls, user, **data):
         if "date_valid_to" not in data:

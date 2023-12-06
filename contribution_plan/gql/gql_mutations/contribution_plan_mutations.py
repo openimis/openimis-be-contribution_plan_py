@@ -1,3 +1,4 @@
+
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -52,6 +53,7 @@ class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMu
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_update_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+
 
     @classmethod
     def _mutate(cls, user, **data):
