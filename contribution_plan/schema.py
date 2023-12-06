@@ -101,7 +101,7 @@ class Query(graphene.ObjectType):
         filters = append_validity_filter(**kwargs)
 
         calculation = kwargs.get('calculation', None)
-        insurance_product = kwargs.get('insuranceProduct', None
+        insurance_product = kwargs.get('insuranceProduct', None)
 
         show_history = kwargs.get('showHistory')
         model = ContributionPlanBundle
