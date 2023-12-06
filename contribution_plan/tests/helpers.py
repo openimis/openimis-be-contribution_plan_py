@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.models import ContentType
+
 from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
     ContributionPlanBundleDetails, PaymentPlan
 from datetime import date
@@ -34,7 +36,8 @@ def create_test_contribution_plan(product=None, calculation=ContributionValuatio
         'is_deleted': False,
         'code': "%s-%s-%d" % (product.code, calculation, periodicity),
         'name': "Contribution Plan Name for %s and %s every %d" % (product.name, calculation, periodicity),
-        'benefit_plan': product,
+        'benefit_plan_type': ContentType.objects.get(model="product"),
+        'benefit_plan_id': product.id,
         'periodicity': periodicity,
         'calculation': calculation,
         'json_ext': {},

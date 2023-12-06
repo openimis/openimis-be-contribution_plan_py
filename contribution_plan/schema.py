@@ -1,6 +1,8 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
 
+from django.db.models import Q
+
 from core.schema import signal_mutation_module_validate
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
@@ -41,7 +43,8 @@ class Query(graphene.ObjectType):
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
         applyDefaultValidityFilter=graphene.Boolean(),
-        showHistory=graphene.Boolean()
+        showHistory=graphene.Boolean(),
+        clientMutationId=graphene.String()
     )
 
     contribution_plan_bundle_details = OrderedDjangoFilterConnectionField(
@@ -93,28 +96,47 @@ class Query(graphene.ObjectType):
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplanbundle_perms):
-           raise PermissionError("Unauthorized")
+            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
 
         calculation = kwargs.get('calculation', None)
-        insurance_product = kwargs.get('insuranceProduct', None)
-        
+        insurance_product = kwargs.get('insuranceProduct', None
+
+        show_history = kwargs.get('showHistory')
         model = ContributionPlanBundle
-        if kwargs.get('showHistory', False):
+
+        client_mutation_id = kwargs.pop("clientMutationId", None)
+        if client_mutation_id:
+            filters.append(Q(mutations__mutation__client_mutation_id=client_mutation_id))
+
+        if show_history:
             query = model.history.filter(*filters).all().as_instances()
         else:
             query = model.objects.filter(*filters).all()
 
-        if calculation:
-            query = query.filter(
-                contributionplanbundledetails__contribution_plan__calculation=str(calculation)
-            ).distinct()
 
-        if insurance_product:
-            query = query.filter(
-                contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
-            ).distinct()
+        if show_history and (calculation or insurance_product):
+            filtered_details = ContributionPlanBundleDetails.objects
+            if calculation:
+                filtered_details = filtered_details.filter(
+                    contribution_plan__calculation=str(calculation)
+                ).values_list('contribution_plan_bundle', flat=True)
+            if insurance_product:
+                filtered_details = filtered_details.filter(
+                    contribution_plan__benefit_plan__id=insurance_product
+                ).values_list('contribution_plan_bundle', flat=True)
+            query = query.filter(id__in=filtered_details)
+        else:
+            if calculation:
+                query = query.filter(
+                    contributionplanbundledetails__contribution_plan__calculation=str(calculation)
+                ).distinct()
+            if insurance_product:
+                query = query.filter(
+                    contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
+                ).distinct()
+
 
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
@@ -123,7 +145,6 @@ class Query(graphene.ObjectType):
                 ContributionPlanConfig.gql_query_contributionplanbundle_perms) and info.context.user.has_perms(
                 ContributionPlanConfig.gql_query_contributionplan_perms)):
            raise PermissionError("Unauthorized")
-
         filters = append_validity_filter(**kwargs)
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)

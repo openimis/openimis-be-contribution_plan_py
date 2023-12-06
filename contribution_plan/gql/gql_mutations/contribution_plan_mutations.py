@@ -1,3 +1,7 @@
+
+from django.contrib.contenttypes.models import ContentType
+
+
 from contribution_plan.apps import ContributionPlanConfig
 from core.gql.gql_mutations import DeleteInputType
 from contribution_plan.services import ContributionPlanService
@@ -18,6 +22,14 @@ class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMu
 
     class Input(ContributionPlanInputType):
         pass
+
+    @classmethod
+    def create_object(cls, user, object_data):
+        content_type = ContentType.objects.get(model=object_data['benefit_plan_type'].lower())
+        object_data['benefit_plan_type'] = content_type
+        obj = cls._model(**object_data)
+        obj.save(username=user.username)
+        return obj
 
     @classmethod
     def _validate_mutation(cls, user, **data):
@@ -41,6 +53,21 @@ class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMu
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_update_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+
+
+    @classmethod
+    def _mutate(cls, user, **data):
+        if "date_valid_to" not in data:
+            data['date_valid_to'] = None
+        if "client_mutation_id" in data:
+            data.pop('client_mutation_id')
+        if "client_mutation_label" in data:
+            data.pop('client_mutation_label')
+        updated_object = cls._model.objects.filter(id=data['id']).first()
+        content_type = ContentType.objects.get(model=data['benefit_plan_type'].lower())
+        data['benefit_plan_type'] = content_type
+        [setattr(updated_object, key, data[key]) for key in data]
+        cls.update_object(user=user, object_to_update=updated_object)
 
 
 class DeleteContributionPlanMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
