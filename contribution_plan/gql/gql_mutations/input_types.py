@@ -33,9 +33,9 @@ class ContributionPlanBundleReplaceInputType(ReplaceInputType):
 class ContributionPlanInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=False)
     code = graphene.String(required=True, max_length=32)
-    name = graphene.String(required=True, max_lenght=255)
+    name = graphene.String(required=True, max_length=255)
     calculation = graphene.UUID(required=True)
-    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_type = graphene.String(required=False, max_length=255)
     benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=True)
     date_valid_from = graphene.Date(required=False)
@@ -46,9 +46,9 @@ class ContributionPlanInputType(OpenIMISMutation.Input):
 class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
     id = graphene.UUID(required=True)
     code = graphene.String(required=False, max_length=32)
-    name = graphene.String(required=False, max_lenght=255)
+    name = graphene.String(required=False, max_length=255)
     calculation = graphene.UUID(required=False)
-    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_type = graphene.String(required=False, max_length=255)
     benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=False)
@@ -57,9 +57,9 @@ class ContributionPlanUpdateInputType(OpenIMISMutation.Input):
 
 
 class ContributionPlanReplaceInputType(ReplaceInputType):
-    name = graphene.String(required=False, max_lenght=255)
+    name = graphene.String(required=False, max_length=255)
     calculation = graphene.UUID(required=False)
-    benefit_plan_type = graphene.String(required=False, max_lenght=255)
+    benefit_plan_type = graphene.String(required=False, max_length=255)
     benefit_plan_id = graphene.String(required=True)
     periodicity = graphene.Int(required=False)
     date_valid_from = graphene.Date(required=True)
