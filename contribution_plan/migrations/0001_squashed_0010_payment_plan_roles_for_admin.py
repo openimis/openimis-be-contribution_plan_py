@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('core', '0009_mutationlog_client_mutation_details'),
-        ('product', '__first__'),
+        ('product', '0002_productmutation'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('calculation', '0001_initial'),
     ]
