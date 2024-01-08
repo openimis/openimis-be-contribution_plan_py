@@ -21,8 +21,8 @@ class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutatio
 
     @classmethod
     def create_object(cls, user, object_data):
-        content_type = ContentType.objects.get(model=object_data['benefit_plan_type'].lower())
-        object_data['benefit_plan_type'] = content_type
+        # content_type = ContentType.objects.get(model=object_data['benefit_plan_type'].lower())
+        # object_data['benefit_plan_type'] = content_type
         obj = cls._model(**object_data)
         obj.save(username=user.username)
         return obj
