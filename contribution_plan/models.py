@@ -24,7 +24,7 @@ class GenericPlan(GenericPlanQuerysetMixin, core_models.HistoryBusinessModel):
 
 
 _get_contribution_length_signal_params = ["grace_period"]
-get_contribution_length_signal = Signal(providing_args=_get_contribution_length_signal_params)
+get_contribution_length_signal = Signal(_get_contribution_length_signal_params)
 
 
 class ContributionPlanBundleManager(models.Manager):
