@@ -50,7 +50,7 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
                 ContributionPlanConfig.gql_mutation_update_paymentplan_perms):
             raise ValidationError(_("mutation.authentication_required"))
 
-        if PaymentPlanService.check_unique_code(data['code']):
+        if PaymentPlanService.check_unique_code(data['code'], data['id']):
             raise ValidationError(_("mutation.payment_plan_code_duplicated"))
 
 
