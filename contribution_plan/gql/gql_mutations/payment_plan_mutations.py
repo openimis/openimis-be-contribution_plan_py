@@ -53,7 +53,6 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
         if PaymentPlanService.check_unique_code(data['code'], data['id']):
             raise ValidationError(_("mutation.payment_plan_code_duplicated"))
 
-
     @classmethod
     def _mutate(cls, user, **data):
         if "date_valid_to" not in data:
