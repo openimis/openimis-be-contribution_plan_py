@@ -311,7 +311,10 @@ class PaymentPlan(object):
 
     @staticmethod
     def check_unique_code(code, uuid=None):
-        if PaymentPlanModel.objects.filter(code=code, is_deleted=False).exclude(id=uuid).exists():
+        qs = PaymentPlanModel.objects.filter(code=code, is_deleted=False)
+        if uuid:
+            qs = qs.exclude(id=uuid)
+        if qs:
             return [{"message": "Payment plan code %s already exists" % code}]
         return []
 
