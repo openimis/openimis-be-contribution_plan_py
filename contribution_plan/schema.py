@@ -1,5 +1,6 @@
 import graphene
 import graphene_django_optimizer as gql_optimizer
+from django.contrib.contenttypes.models import ContentType
 
 from django.db.models import Q
 
@@ -87,11 +88,13 @@ class Query(graphene.ObjectType):
            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
+        
         model = ContributionPlan
         if kwargs.get('showHistory', False):
             query = model.history.filter(*filters).all().as_instances()
         else:
             query = model.objects.filter(*filters).all()
+            
         return gql_optimizer.query(query, info)
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
@@ -149,6 +152,7 @@ class Query(graphene.ObjectType):
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
+        
     def resolve_payment_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_paymentplan_perms):
            raise PermissionError("Unauthorized")
