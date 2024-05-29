@@ -48,7 +48,7 @@ class MutationTestContributionPlan(TestCase):
             "code": "XYZ",
             "name": "XYZ test name xyz - " + str(time_stamp),
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}",
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower(),
             "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
@@ -92,7 +92,7 @@ class MutationTestContributionPlan(TestCase):
             "code": "XYZ deletion",
             "name": "XYZ test deletion xyz - " + str(time_stamp),
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}",
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower(),
             "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
@@ -117,7 +117,7 @@ class MutationTestContributionPlan(TestCase):
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}"
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
@@ -135,7 +135,7 @@ class MutationTestContributionPlan(TestCase):
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}"
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
@@ -154,7 +154,7 @@ class MutationTestContributionPlan(TestCase):
             "name": "XYZ test name xxxxx",
             "dateValidFrom": "2020-12-10",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}"
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", {**input_param})["edges"]
@@ -172,7 +172,7 @@ class MutationTestContributionPlan(TestCase):
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}"
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
         self.add_mutation("updateContributionPlan", input_param)
         result = self.find_by_exact_attributes_query("contributionPlan", input_param)["edges"]
@@ -189,7 +189,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "name": "XYZ test name xxxxx",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
-            "benefitPlanType": f"{ContentType.objects.get(model=self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()).id}"
+            "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
         result_mutation = self.add_mutation("updateContributionPlan", input_param)
         self.assertEqual(True, 'errors' in result_mutation)
