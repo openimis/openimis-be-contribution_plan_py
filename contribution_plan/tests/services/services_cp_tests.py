@@ -58,7 +58,7 @@ class ServiceTestContributionPlan(TestCase):
                 "Contribution Plan Name Service",
                 1,
                 6,
-                self.test_product.id,
+                str(self.test_product.id),
                 str(self.calculation),
             ),
             (
@@ -167,7 +167,7 @@ class ServiceTestContributionPlan(TestCase):
                 "",
                 3,
                 2,
-                self.test_product2.id,
+                str(self.test_product2.id),
             ),
             (
                 response['success'],
@@ -648,7 +648,7 @@ class ServiceTestContributionPlan(TestCase):
                 "Payment Plan Name Service",
                 1,
                 6,
-                self.test_product.id,
+                str(self.test_product.id),
                 str(self.calculation),
             ),
             (
