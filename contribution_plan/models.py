@@ -23,10 +23,6 @@ class GenericPlan(GenericPlanQuerysetMixin, core_models.HistoryBusinessModel):
         abstract = True
 
 
-_get_contribution_length_signal_params = ["grace_period"]
-get_contribution_length_signal = Signal(_get_contribution_length_signal_params)
-
-
 class ContributionPlanBundleManager(models.Manager):
     def filter(self, *args, **kwargs):
         keys = [x for x in kwargs if "itemsvc" in x]
@@ -68,12 +64,7 @@ class ContributionPlanManager(models.Manager):
 
 
 class ContributionPlan(GenericPlan):
-    length: int = None
 
-    def get_contribution_length(self):
-        self.length = self.periodicity
-        get_contribution_length_signal.send(sender=self.__class__,  instance=self)
-        return self.length
 
     class Meta:
         db_table = 'tblContributionPlan'
