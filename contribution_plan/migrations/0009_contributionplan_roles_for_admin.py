@@ -8,16 +8,16 @@ logger = logging.getLogger(__name__)
 
 
 def add_rights(apps, schema_editor):
-    insert_role_right_for_system(64, 151101)  # Contribution plan and bundle
-    insert_role_right_for_system(64, 151102)  # update
-    insert_role_right_for_system(64, 151103)  # delete
-    insert_role_right_for_system(64, 151104)  # update
-    insert_role_right_for_system(64, 151106)  # update
-    insert_role_right_for_system(64, 151201)  # Contribution plan
-    insert_role_right_for_system(64, 151202)  # Contribution plan
-    insert_role_right_for_system(64, 151203)  # Contribution plan
-    insert_role_right_for_system(64, 151204)  # Contribution plan
-    insert_role_right_for_system(64, 151206)  # Contribution plan
+    insert_role_right_for_system(64, 151101, apps)  # Contribution plan and bundle
+    insert_role_right_for_system(64, 151102, apps)  # update
+    insert_role_right_for_system(64, 151103, apps)  # delete
+    insert_role_right_for_system(64, 151104, apps)  # update
+    insert_role_right_for_system(64, 151106, apps)  # update
+    insert_role_right_for_system(64, 151201, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151202, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151203, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151204, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151206, apps)  # Contribution plan
 
 
 class Migration(migrations.Migration):

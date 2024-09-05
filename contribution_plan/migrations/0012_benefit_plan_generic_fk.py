@@ -4,11 +4,11 @@ from django.db import migrations, models
 import django.db.models.deletion
 from django.db.models import F
 
-from product.models import Product
 
 
 def move_to_generic_fk(apps, schema_editor):
     db_alias = schema_editor.connection.alias
+    Product = apps.get_model('product', 'Product')
     product_content_type = ContentType.objects.get_for_model(Product)
     apps.get_model('contribution_plan', 'contributionplan').objects.using(db_alias).update(benefit_plan_id=F('benefit_plan_temp'), benefit_plan_type=product_content_type)
     apps.get_model('contribution_plan', 'historicalcontributionplan').objects.using(db_alias).update(benefit_plan_id=F('benefit_plan_temp'), benefit_plan_type=product_content_type)

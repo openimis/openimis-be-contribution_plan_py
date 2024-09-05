@@ -14,21 +14,21 @@ from core.utils import insert_role_right_for_system
 
 
 def add_rights(apps, schema_editor):
-    insert_role_right_for_system(64, 151101)  # Contribution plan and bundle
-    insert_role_right_for_system(64, 151102)  # update
-    insert_role_right_for_system(64, 151103)  # delete
-    insert_role_right_for_system(64, 151104)  # update
-    insert_role_right_for_system(64, 151106)  # update
-    insert_role_right_for_system(64, 151201)  # Contribution plan
-    insert_role_right_for_system(64, 151202)  # Contribution plan
-    insert_role_right_for_system(64, 151203)  # Contribution plan
-    insert_role_right_for_system(64, 151204)  # Contribution plan
-    insert_role_right_for_system(64, 151206)  # Contribution plan
-    insert_role_right_for_system(64, 157101)  # Payment plan
-    insert_role_right_for_system(64, 157102)
-    insert_role_right_for_system(64, 157103)
-    insert_role_right_for_system(64, 157104)
-    insert_role_right_for_system(64, 157106)
+    insert_role_right_for_system(64, 151101, apps)  # Contribution plan and bundle
+    insert_role_right_for_system(64, 151102, apps)  # update
+    insert_role_right_for_system(64, 151103, apps)  # delete
+    insert_role_right_for_system(64, 151104, apps)  # update
+    insert_role_right_for_system(64, 151106, apps)  # update
+    insert_role_right_for_system(64, 151201, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151202, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151203, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151204, apps)  # Contribution plan
+    insert_role_right_for_system(64, 151206, apps)  # Contribution plan
+    insert_role_right_for_system(64, 157101, apps)  # Payment plan
+    insert_role_right_for_system(64, 157102, apps)
+    insert_role_right_for_system(64, 157103, apps)
+    insert_role_right_for_system(64, 157104, apps)
+    insert_role_right_for_system(64, 157106, apps)
 
 
 # Functions from the following migrations need manual copying.
