@@ -21,8 +21,10 @@ class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutatio
 
     @classmethod
     def create_object(cls, user, object_data):
-        content_type = ContentType.objects.get(model=object_data['benefit_plan_type'].lower())
-        object_data['benefit_plan_type'] = content_type
+        benefit_plan_type__model = object_data.pop('benefit_plan_type__model', None)
+        if benefit_plan_type__model:
+            content_type = ContentType.objects.get(model=benefit_plan_type__model.lower())
+            object_data['benefit_plan_type'] = content_type
         obj = cls._model(**object_data)
         obj.save(username=user.username)
         return obj
@@ -62,8 +64,10 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
         if "client_mutation_label" in data:
             data.pop('client_mutation_label')
         updated_object = cls._model.objects.filter(id=data['id']).first()
-        content_type = ContentType.objects.get(model=data['benefit_plan_type'].lower())
-        data['benefit_plan_type'] = content_type
+        benefit_plan_type__model = data.pop('benefit_plan_type__model', None)
+        if benefit_plan_type__model:
+            content_type = ContentType.objects.get(model=benefit_plan_type__model.lower())
+            data['benefit_plan_type'] = content_type
         [setattr(updated_object, key, data[key]) for key in data]
         cls.update_object(user=user, object_to_update=updated_object)
 
