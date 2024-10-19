@@ -14,6 +14,7 @@ from django.utils.translation import gettext as _
 class ContributionPlanGQLType(DjangoObjectType):
     benefit_plan = graphene.JSONString()
     benefit_plan_type__model = graphene.String()
+    benefit_plan_type_name = graphene.String()
 
     @staticmethod
     def resolve_benefit_plan_type__model(root, info):
