@@ -140,6 +140,8 @@ class PaymentPlanGQLType(DjangoObjectType):
     def resolve_benefit_plan(root, info):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+        if not root.benefit_plan:
+            root.benefit_plan = root.get_benefit_plan()
         return model_obj_to_json(root.benefit_plan)
 
     class Meta:

@@ -24,6 +24,11 @@ class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutatio
         benefit_plan_type__model = object_data.pop('benefit_plan_type__model', None)
         if benefit_plan_type__model:
             content_type = ContentType.objects.get(model=benefit_plan_type__model.lower())
+            model_id = object_data.get('benefit_plan_id')
+            try:
+                content_type.get_object_for_this_type(pk=model_id)
+            except Exception as e:
+                raise AttributeError(e)
             object_data['benefit_plan_type'] = content_type
         obj = cls._model(**object_data)
         obj.save(username=user.username)
@@ -66,7 +71,12 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
         updated_object = cls._model.objects.filter(id=data['id']).first()
         benefit_plan_type__model = data.pop('benefit_plan_type__model', None)
         if benefit_plan_type__model:
+            model_id = data.get('benefit_plan_id')
             content_type = ContentType.objects.get(model=benefit_plan_type__model.lower())
+            try:
+                content_type.get_object_for_this_type(pk=model_id)
+            except Exception as e:
+                raise AttributeError(e)
             data['benefit_plan_type'] = content_type
         [setattr(updated_object, key, data[key]) for key in data]
         cls.update_object(user=user, object_to_update=updated_object)
