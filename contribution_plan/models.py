@@ -18,10 +18,6 @@ class GenericPlan(GenericPlanQuerysetMixin, core_models.HistoryBusinessModel):
     periodicity = models.IntegerField(db_column="Periodicity", null=False)
 
     objects = GenericPlanManager()
-    
-    def get_benefit_plan(self):
-        if self.benefit_plan_id and self.benefit_plan_type:
-            return ContentType.objects.get(id=self.benefit_plan_type).get_model()
 
     class Meta:
         abstract = True
