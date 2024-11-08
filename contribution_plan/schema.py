@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from core.schema import signal_mutation_module_validate
+from core.services import wait_for_mutation
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
 from contribution_plan.services import \
@@ -111,6 +112,7 @@ class Query(graphene.ObjectType):
 
         client_mutation_id = kwargs.pop("clientMutationId", None)
         if client_mutation_id:
+            wait_for_mutation(client_mutation_id)
             filters.append(Q(mutations__mutation__client_mutation_id=client_mutation_id))
 
         if show_history:
