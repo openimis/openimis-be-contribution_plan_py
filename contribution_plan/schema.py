@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
 from core.schema import signal_mutation_module_validate
-from core.service import wait_for_mutation
+from core.services import wait_for_mutation
 from contribution_plan.gql import ContributionPlanGQLType, ContributionPlanBundleGQLType, \
     ContributionPlanBundleDetailsGQLType, PaymentPlanGQLType
 from contribution_plan.services import \
