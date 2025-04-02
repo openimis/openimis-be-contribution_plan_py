@@ -7,18 +7,17 @@ from django.test import TestCase
 import graphene
 from contribution_plan.tests.helpers import *
 from contribution_plan import schema as contribution_plan_schema
-from calculation.calculation_rule import ContributionValuationRule
+from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 from core import datetime
+from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from product.test_helpers import create_test_product
 from graphene import Schema
 from graphene.test import Client
 from django.contrib.contenttypes.models import ContentType
 
 
-class MutationTestContributionPlan(TestCase):
-    class BaseTestContext:
-        def __init__(self, user):
-            self.user = user
+class MutationTestContributionPlan(openIMISGraphQLTestCase):
+
 
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
@@ -29,13 +28,18 @@ class MutationTestContributionPlan(TestCase):
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
         cls.user = User.objects.filter(username='admin').first()
+        cls.user_context = BaseTestContext(cls.user)
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
-        cls.test_contribution_plan = create_test_contribution_plan()
         cls.test_calculation = ContributionValuationRule.uuid
         cls.test_calculation2 = ContributionValuationRule.uuid
-        cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
         cls.test_product = create_test_product("PlanCode", custom_props={"insurance_period": 12, })
+        cls.test_contribution_plan = create_test_contribution_plan(cls.test_product, cls.test_calculation)
+
+        cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details(
+            cls.test_contribution_plan_bundle,
+            cls.test_contribution_plan
+        )
         cls.schema = Schema(
             query=contribution_plan_schema.Query,
             mutation=contribution_plan_schema.Mutation
@@ -52,7 +56,6 @@ class MutationTestContributionPlan(TestCase):
             "calculation": f"{self.test_calculation}",
             "periodicity": 12,
         }
-
         result = self.add_mutation("createContributionPlan", input_param)
         result = self.find_by_exact_attributes_query(
             "contributionPlan",
@@ -83,7 +86,7 @@ class MutationTestContributionPlan(TestCase):
         input_param = {
             "name": "XYZ test name xyz - " + str(time_stamp),
         }
-        result_mutation = self.add_mutation("createContributionPlan", input_param)
+        result_mutation = self.send_mutation("createContributionPlan", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_delete_single_deletion(self):
@@ -102,7 +105,7 @@ class MutationTestContributionPlan(TestCase):
         input_param2 = {
             "uuids": [f"{converted_id}"],
         }
-        self.add_mutation("deleteContributionPlan", input_param2)
+        self.add_mutation("deleteContributionPlan", input_param2, raw=False)
         result2 = self.find_by_exact_attributes_query("contributionPlan", {**input_param, 'isDeleted': False})
 
         # tear down the test data
@@ -191,7 +194,7 @@ class MutationTestContributionPlan(TestCase):
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
             "benefitPlanType_Model": self.test_contribution_plan.benefit_plan_type.model_class().__name__.lower()
         }
-        result_mutation = self.add_mutation("updateContributionPlan", input_param)
+        result_mutation = self.send_mutation("updateContributionPlan", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def find_by_id_query(self, query_type, id, context=None):
@@ -252,32 +255,21 @@ class MutationTestContributionPlan(TestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context = self.BaseTestContext(self.user)
+            context =self.user_context.get_request()
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
         return query_data
 
-    def add_mutation(self, mutation_type, input_params, context=None):
-        mutation = f'''
-        mutation 
-        {{
-            {mutation_type}(input: {{
-               {self.build_params(input_params)}
-            }})  
+    def add_mutation(self, mutation_type, input_params, context=None, raw=False):
 
-          {{
-            internalId
-            clientMutationId
-          }}
-        }}
-        '''
-        mutation_result = self.execute_mutation(mutation, context=context)
+        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt(), raw = raw) 
         return mutation_result
+
 
     def execute_mutation(self, mutation, context=None):
         if context is None:
-            context = self.BaseTestContext(self.user)
+            context = self.user_context.get_request()
 
         mutation_result = self.graph_client.execute(mutation, context=context)
         return mutation_result

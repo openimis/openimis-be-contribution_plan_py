@@ -11,12 +11,9 @@ from core import datetime
 from product.test_helpers import create_test_product
 from graphene import Schema
 from graphene.test import Client
+from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 
-
-class MutationTestPaymentPlan(TestCase):
-    class BaseTestContext:
-        def __init__(self, user):
-            self.user = user
+class MutationTestPaymentPlan(openIMISGraphQLTestCase):
 
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
@@ -27,6 +24,7 @@ class MutationTestPaymentPlan(TestCase):
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
         cls.user = User.objects.filter(username='admin').first()
+        cls.user_context = BaseTestContext(cls.user)        
         cls.test_payment_plan = create_test_payment_plan()
         cls.test_calculation = ContributionValuationRule.uuid
         cls.test_calculation2 = ContributionValuationRule.uuid
@@ -160,21 +158,10 @@ class MutationTestPaymentPlan(TestCase):
         return query_data
 
     def add_mutation(self, mutation_type, input_params, context=None):
-        mutation = f'''
-        mutation 
-        {{
-            {mutation_type}(input: {{
-               {self.build_params(input_params)}
-            }})  
 
-          {{
-            internalId
-            clientMutationId
-          }}
-        }}
-        '''
-        mutation_result = self.execute_mutation(mutation, context=context)
+        mutation_result = self.send_mutation(mutation_type, input_params, cls.user_context.get_jwt()) 
         return mutation_result
+
 
     def execute_mutation(self, mutation, context=None):
         if context is None:

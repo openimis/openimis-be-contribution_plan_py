@@ -5,7 +5,7 @@ from contribution_plan.services import ContributionPlanService, \
     ContributionPlanBundleDetails as ContributionPlanBundleDetailsService, PaymentPlan as PaymentPlanService
 from contribution_plan.models import ContributionPlan, ContributionPlanBundle, \
     ContributionPlanBundleDetails, PaymentPlan
-from calculation.calculation_rule import ContributionValuationRule
+from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 from core.models import User
 from contribution_plan.tests.helpers import create_test_contribution_plan, \
     create_test_contribution_plan_bundle
