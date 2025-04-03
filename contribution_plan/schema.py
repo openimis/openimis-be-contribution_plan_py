@@ -203,15 +203,15 @@ class Mutation(graphene.ObjectType):
 
 
 def on_contribution_plan_mutation(sender, **kwargs):
-    uuid = kwargs['data'].get('uuid', None)
-    if not uuid:
+    cp_uuid = kwargs['data'].get('uuid', None) or kwargs['data'].get('id', None)
+    if cp_uuid is None :
         return []
     if "ContributionPlanMutation" in str(sender._mutation_class):
-        impacted_contribution_plan = ContributionPlan.objects.get(id=uuid)
+        impacted_contribution_plan = ContributionPlan.objects.get(id=cp_uuid)
         ContributionPlanMutation.objects.create(
             contribution_plan=impacted_contribution_plan, mutation_id=kwargs['mutation_log_id'])
     if "ContributionPlanBundleMutation" in str(sender._mutation_class):
-        impacted_contribution_plan_bundle = ContributionPlanBundle.objects.get(id=uuid)
+        impacted_contribution_plan_bundle = ContributionPlanBundle.objects.get(id=cp_uuid)
         ContributionPlanBundleMutation.objects.create(
             contribution_plan_bundle=impacted_contribution_plan_bundle, mutation_id=kwargs['mutation_log_id'])
     return []

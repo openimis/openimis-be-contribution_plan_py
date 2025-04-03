@@ -6,7 +6,7 @@ from datetime import date
 
 from core.models import User
 from product.test_helpers import create_test_product
-from calculation.calculation_rule import ContributionValuationRule
+from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 
 
 def create_test_contribution_plan_bundle(custom_props={}):

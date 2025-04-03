@@ -11,12 +11,10 @@ from uuid import UUID
 
 from contribution_plan.tests.helpers import *
 from contribution_plan import schema as contribution_plan_schema
+from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 
 
 class QueryTest(TestCase):
-    class BaseTestContext:
-        user = mock.Mock(is_anonymous=False)
-        user.has_perm = mock.MagicMock(return_value=False)
 
     class AnonymousUserContext:
         user = AnonymousUser()
@@ -29,7 +27,8 @@ class QueryTest(TestCase):
         cls.test_contribution_plan = create_test_contribution_plan()
         cls.test_contribution_plan_details = create_test_contribution_plan_bundle_details()
         cls.test_payment_plan = create_test_payment_plan()
-
+        cls.user = User.objects.filter(username='admin').first()
+        cls.user_context = BaseTestContext(cls.user)
         cls.schema = Schema(
             query=contribution_plan_schema.Query,
             mutation=contribution_plan_schema.Mutation
@@ -169,7 +168,7 @@ class QueryTest(TestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context = self.BaseTestContext()
+            context = self.user_context.get_request()
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']

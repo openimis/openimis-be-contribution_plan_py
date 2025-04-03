@@ -5,16 +5,15 @@ from unittest import mock
 from django.test import TestCase
 
 import graphene
+from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from contribution_plan.tests.helpers import *
 from contribution_plan import schema as contribution_plan_schema
 from graphene import Schema
 from graphene.test import Client
 
 
-class MutationTestContributionPlanBundle(TestCase):
-    class BaseTestContext:
-        def __init__(self, user):
-            self.user = user
+class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
+
 
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
@@ -25,6 +24,8 @@ class MutationTestContributionPlanBundle(TestCase):
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
         cls.user = User.objects.filter(username='admin').first()
+        cls.user_context = BaseTestContext(cls.user)
+
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})
 
@@ -58,7 +59,7 @@ class MutationTestContributionPlanBundle(TestCase):
         input_param = {
             "name": "XYZ test name xyz - " + str(time_stamp),
         }
-        result_mutation = self.add_mutation("createContributionPlanBundle", input_param)
+        result_mutation = self.send_mutation("createContributionPlanBundle", input_param, self.user_context.get_jwt(),  follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_bundle_delete_single_deletion(self):
@@ -150,7 +151,7 @@ class MutationTestContributionPlanBundle(TestCase):
             "id": f"{id}",
             "code": "XYZ test name xxxxx",
         }
-        result_mutation = self.add_mutation("updateContributionPlanBundle", input_param)
+        result_mutation = self.send_mutation("updateContributionPlanBundle", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_bundle_update_6_without_id_field(self):
@@ -159,7 +160,7 @@ class MutationTestContributionPlanBundle(TestCase):
         input_param = {
             "name": "XYZ test name xxxxx",
         }
-        result_mutation = self.add_mutation("updateContributionPlanBundle", input_param)
+        result_mutation = self.send_mutation("updateContributionPlanBundle", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def find_by_id_query(self, query_type, id, context=None):
@@ -217,32 +218,21 @@ class MutationTestContributionPlanBundle(TestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context = self.BaseTestContext(self.user)
+            context = self.user_context.get_request()
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
         return query_data
 
     def add_mutation(self, mutation_type, input_params, context=None):
-        mutation = f'''
-        mutation 
-        {{
-            {mutation_type}(input: {{
-               {self.build_params(input_params)}
-            }})  
 
-          {{
-            internalId
-            clientMutationId
-          }}
-        }}
-        '''
-        mutation_result = self.execute_mutation(mutation, context=context)
+        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt()) 
         return mutation_result
+
 
     def execute_mutation(self, mutation, context=None):
         if context is None:
-            context = self.BaseTestContext(self.user)
+            context = self.user_context.get_request()
 
         mutation_result = self.graph_client.execute(mutation, context=context)
         return mutation_result
