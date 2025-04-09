@@ -17,11 +17,18 @@ def move_to_generic_fk(apps, schema_editor):
 
 class Migration(migrations.Migration):
     #replaces=[('contribution_plan','0003_benefit_plan_generic_fk')]
+    from django.apps import apps
+    try:
+        Product = apps.get_model('product', 'Product')
+    except:
+        Product = None
+        
     dependencies = [
-        ('product', '0008_auto_20230510_1347'),
-            ('contribution_plan', '0011_auto_20230126_0903'),
+        ('contribution_plan', '0011_auto_20230126_0903'),
         ('contenttypes', '0002_remove_content_type_name'),
     ]
+    if Product:
+        dependencies.append(('product', '0008_auto_20230510_1347'))
 
     operations = [
         migrations.AlterField(

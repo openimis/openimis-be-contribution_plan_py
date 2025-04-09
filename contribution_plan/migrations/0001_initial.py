@@ -9,13 +9,19 @@ import simple_history.models
 
 
 class Migration(migrations.Migration):
-
+    from django.apps import apps
+    try:
+        Product = apps.get_model('product', 'Product')
+    except:
+        Product = None
+        
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('product', '__first__'),
     ]
+    if Product:
+        dependencies.append(('product', '__first__'))
 
     operations = [
         migrations.CreateModel(
