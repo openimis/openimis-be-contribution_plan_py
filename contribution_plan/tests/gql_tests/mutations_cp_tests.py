@@ -20,9 +20,6 @@ from django.contrib.contenttypes.models import ContentType
 class MutationTestContributionPlan(openIMISGraphQLTestCase):
 
 
-    class AnonymousUserContext:
-        user = mock.Mock(is_anonymous=True)
-
     @classmethod
     def setUpClass(cls):
         super(MutationTestContributionPlan, cls).setUpClass()
