@@ -41,6 +41,7 @@ class Query(graphene.ObjectType):
         ContributionPlanBundleGQLType,
         orderBy=graphene.List(of_type=graphene.String),
         calculation=graphene.UUID(),
+        # FIXME remove Product
         insuranceProduct=graphene.Int(),
         dateValidFrom__Gte=graphene.DateTime(),
         dateValidTo__Lte=graphene.DateTime(),
@@ -128,8 +129,12 @@ class Query(graphene.ObjectType):
                     contribution_plan__calculation=str(calculation)
                 ).values_list('contribution_plan_bundle', flat=True)
             if insurance_product:
+                Product = apps.get_model('product', 'Product')
+                product_content_type = ContentType.objects.get_for_model(Product)
                 filtered_details = filtered_details.filter(
-                    contribution_plan__benefit_plan__id=insurance_product
+                    contribution_plan__benefit_plan_id=insurance_product,
+                    contribution_plan__benefit_plan_type=product_content_type,
+                    
                 ).values_list('contribution_plan_bundle', flat=True)
             query = query.filter(id__in=filtered_details)
         else:
@@ -138,8 +143,11 @@ class Query(graphene.ObjectType):
                     contributionplanbundledetails__contribution_plan__calculation=str(calculation)
                 ).distinct()
             if insurance_product:
+                Product = apps.get_model('product', 'Product')
+                product_content_type = ContentType.objects.get_for_model(Product)
                 query = query.filter(
-                    contributionplanbundledetails__contribution_plan__benefit_plan__id=insurance_product
+                    contributionplanbundledetails__contribution_plan__benefit_plan_id=insurance_product,
+                    contributionplanbundledetails__contribution_plan__benefit_plan_type=product_content_type,
                 ).distinct()
 
 

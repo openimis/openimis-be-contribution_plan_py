@@ -8,6 +8,7 @@ from contribution_plan import schema as contribution_plan_schema
 from graphene import Schema
 from graphene.test import Client
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
+from core.test_helpers import create_test_interactive_user
 
 class MutationTestContributionPlanBundleDetails(openIMISGraphQLTestCase):
 
@@ -19,7 +20,7 @@ class MutationTestContributionPlanBundleDetails(openIMISGraphQLTestCase):
         super(MutationTestContributionPlanBundleDetails, cls).setUpClass()
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
-        cls.user = User.objects.filter(username='admin').first()
+        cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})

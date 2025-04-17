@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('product', '__first__'),
+        #('product', '__first__'),
         ('contribution_plan', '0002_auto_20201204_1353'),
     ]
 

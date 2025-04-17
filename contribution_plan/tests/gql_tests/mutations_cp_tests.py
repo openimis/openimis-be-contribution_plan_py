@@ -9,6 +9,7 @@ from contribution_plan.tests.helpers import *
 from contribution_plan import schema as contribution_plan_schema
 from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 from core import datetime
+from core.test_helpers import create_test_interactive_user
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from product.test_helpers import create_test_product
 from graphene import Schema
@@ -19,15 +20,12 @@ from django.contrib.contenttypes.models import ContentType
 class MutationTestContributionPlan(openIMISGraphQLTestCase):
 
 
-    class AnonymousUserContext:
-        user = mock.Mock(is_anonymous=True)
-
     @classmethod
     def setUpClass(cls):
         super(MutationTestContributionPlan, cls).setUpClass()
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
-        cls.user = User.objects.filter(username='admin').first()
+        cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
             custom_props={'code': 'SuperContributionPlan mutations!'})

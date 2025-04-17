@@ -7,6 +7,7 @@ from django.test import TestCase
 import graphene
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from contribution_plan.tests.helpers import *
+from core.test_helpers import create_test_interactive_user
 from contribution_plan import schema as contribution_plan_schema
 from graphene import Schema
 from graphene.test import Client
@@ -23,7 +24,7 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
         super(MutationTestContributionPlanBundle, cls).setUpClass()
         if not User.objects.filter(username='admin').exists():
             User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
-        cls.user = User.objects.filter(username='admin').first()
+        cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
 
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(

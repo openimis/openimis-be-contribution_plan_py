@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('product', '__first__'),
+        #('product', '__first__'),
         ('contribution_plan', '0007_auto_20210217_1302'),
     ]
 
