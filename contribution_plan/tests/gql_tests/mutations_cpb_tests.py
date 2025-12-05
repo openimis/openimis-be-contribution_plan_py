@@ -22,8 +22,8 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
     @classmethod
     def setUpClass(cls):
         super(MutationTestContributionPlanBundle, cls).setUpClass()
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
+        if not User.objects.filter(username='Admin').exists():
+            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
         cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
 

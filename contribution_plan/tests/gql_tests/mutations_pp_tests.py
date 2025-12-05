@@ -21,9 +21,9 @@ class MutationTestPaymentPlan(openIMISGraphQLTestCase):
     @classmethod
     def setUpClass(cls):
         super(MutationTestPaymentPlan, cls).setUpClass()
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
-        cls.user = User.objects.filter(username='admin').first()
+        if not User.objects.filter(username='Admin').exists():
+            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
+        cls.user = User.objects.filter(username='Admin').first()
         cls.user_context = BaseTestContext(cls.user)        
         cls.test_payment_plan = create_test_payment_plan()
         cls.test_calculation = ContributionValuationRule.uuid
