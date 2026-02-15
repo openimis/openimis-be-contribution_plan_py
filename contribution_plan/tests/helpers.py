@@ -7,6 +7,7 @@ from datetime import date
 from core.models import User
 from product.test_helpers import create_test_product
 from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
+from core.test_helpers import create_test_interactive_user
 
 
 def create_test_contribution_plan_bundle(custom_props={}):
@@ -20,7 +21,7 @@ def create_test_contribution_plan_bundle(custom_props={}):
     }
 
     contribution_plan_bundle = ContributionPlanBundle(**object_data)
-    contribution_plan_bundle.save(username=user.username)
+    contribution_plan_bundle.save(user=user)
 
     return contribution_plan_bundle
 
@@ -96,13 +97,11 @@ def create_test_payment_plan(product=None, calculation=ContributionValuationRule
     }
 
     payment_plan = PaymentPlan(**object_data)
-    payment_plan.save(username=user.username)
+    payment_plan.save(user=user)
 
     return payment_plan
 
 
 def __get_or_create_simple_contribution_plan_user():
-    if not User.objects.filter(username='admin').exists():
-        User.objects.create_superuser(username='admin', password='S\/pe®Pąßw0rd™')
-    user = User.objects.filter(username='admin').first()
-    return user
+
+    return create_test_interactive_user(username='Admin23')

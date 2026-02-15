@@ -41,7 +41,7 @@ class ContributionPlanService(object):
     def create(self, contribution_plan):
         try:
             cp = ContributionPlanModel(**contribution_plan)
-            cp.save(username=self.user.username)
+            cp.save(user=self.user)
             uuid_string = str(cp.id)
             dict_representation = model_to_dict(cp)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -54,7 +54,7 @@ class ContributionPlanService(object):
         try:
             updated_cp = ContributionPlanModel.objects.filter(id=contribution_plan['id']).first()
             [setattr(updated_cp, key, contribution_plan[key]) for key in contribution_plan]
-            updated_cp.save(username=self.user.username)
+            updated_cp.save(user=self.user)
             uuid_string = str(updated_cp.id)
             dict_representation = model_to_dict(updated_cp)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -120,7 +120,7 @@ class ContributionPlanBundleService(object):
     def create(self, contribution_plan_bundle):
         try:
             cpb = ContributionPlanBundleModel(**contribution_plan_bundle)
-            cpb.save(username=self.user.username)
+            cpb.save(user=self.user)
             uuid_string = str(cpb.id)
             dict_representation = model_to_dict(cpb)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -133,7 +133,7 @@ class ContributionPlanBundleService(object):
         try:
             updated_cpb = ContributionPlanBundleModel.objects.filter(id=contribution_plan_bundle['id']).first()
             [setattr(updated_cpb, key, contribution_plan_bundle[key]) for key in contribution_plan_bundle]
-            updated_cpb.save(username=self.user.username)
+            updated_cpb.save(user=self.user)
             uuid_string = str(updated_cpb.id)
             dict_representation = model_to_dict(updated_cpb)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -201,7 +201,7 @@ class ContributionPlanBundleDetails(object):
     def create(self, contribution_plan_bundle_details):
         try:
             cpbd = ContributionPlanBundleDetailsModel(**contribution_plan_bundle_details)
-            cpbd.save(username=self.user.username)
+            cpbd.save(user=self.user)
             uuid_string = str(cpbd.id)
             dict_representation = model_to_dict(cpbd)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -215,7 +215,7 @@ class ContributionPlanBundleDetails(object):
             updated_cpbd = ContributionPlanBundleDetailsModel.objects.filter(
                 id=contribution_plan_bundle_details['id']).first()
             [setattr(updated_cpbd, key, contribution_plan_bundle_details[key]) for key in contribution_plan_bundle_details]
-            updated_cpbd.save(username=self.user.username)
+            updated_cpbd.save(user=self.user)
             uuid_string = str(updated_cpbd.id)
             dict_representation = model_to_dict(updated_cpbd)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -257,7 +257,7 @@ class PaymentPlan(object):
     def create(self, payment_plan):
         try:
             pp = PaymentPlanModel(**payment_plan)
-            pp.save(username=self.user.username)
+            pp.save(user=self.user)
             uuid_string = str(pp.id)
             dict_representation = model_to_dict(pp)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
@@ -270,7 +270,7 @@ class PaymentPlan(object):
         try:
             updated_pp = PaymentPlanModel.objects.filter(id=payment_plan['id']).first()
             [setattr(updated_pp, key, payment_plan[key]) for key in payment_plan]
-            updated_pp.save(username=self.user.username)
+            updated_pp.save(user=self.user)
             uuid_string = str(updated_pp.id)
             dict_representation = model_to_dict(updated_pp)
             dict_representation["id"], dict_representation["uuid"] = (str(uuid_string), str(uuid_string))
