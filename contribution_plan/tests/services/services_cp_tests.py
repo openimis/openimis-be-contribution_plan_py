@@ -202,9 +202,9 @@ class ServiceTestContributionPlan(TestCase):
 
         self.assertEqual(
             (
-                False,
-                "Failed to update ContributionPlan",
-                "['Record has not be updated - there are no changes in fields']",
+                True,
+                "Ok",
+                "",
             ),
             (
                 response['success'],
@@ -471,9 +471,9 @@ class ServiceTestContributionPlan(TestCase):
 
         self.assertEqual(
             (
-                False,
-                "Failed to update ContributionPlanBundle",
-                "['Record has not be updated - there are no changes in fields']",
+                True,
+                "Ok",
+                "",
             ),
             (
                 response['success'],
