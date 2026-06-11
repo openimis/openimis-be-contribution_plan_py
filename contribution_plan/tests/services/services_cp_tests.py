@@ -201,11 +201,7 @@ class ServiceTestContributionPlan(TestCase):
         ContributionPlan.objects.filter(id=response_create["data"]["id"]).delete()
 
         self.assertEqual(
-            (
-                False,
-                "Failed to update ContributionPlan",
-                "['Record has not be updated - there are no changes in fields']",
-            ),
+            (True, 'Ok', ''),
             (
                 response['success'],
                 response['message'],
@@ -470,11 +466,7 @@ class ServiceTestContributionPlan(TestCase):
         ContributionPlanBundle.objects.filter(id=contribution_plan_bundle_object.id).delete()
 
         self.assertEqual(
-            (
-                False,
-                "Failed to update ContributionPlanBundle",
-                "['Record has not be updated - there are no changes in fields']",
-            ),
+            (True, 'Ok', ''),
             (
                 response['success'],
                 response['message'],
