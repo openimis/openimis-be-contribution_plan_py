@@ -5,6 +5,7 @@ from unittest import mock
 from django.test import TestCase
 
 import graphene
+from core.models import MutationLog
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from contribution_plan.tests.helpers import *
 from core.test_helpers import create_test_interactive_user
@@ -163,6 +164,130 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
         }
         result_mutation = self.send_mutation("updateContributionPlanBundle", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
+
+    def test_contribution_plan_bundle_create_date_valid_to_before_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        code = "XYZ invalid range " + str(time_stamp)
+        input_param = {
+            "code": code,
+            "name": "XYZ test invalid range xyz - " + str(time_stamp),
+            "dateValidFrom": "2025-06-01",
+            "dateValidTo": "2025-05-01",
+        }
+        mutation_result = self.send_mutation(
+            "createContributionPlanBundle", input_param, self.user_context.get_jwt(),
+            follow=False, allow_exceptions=False
+        )
+        internal_id = mutation_result['data']['createContributionPlanBundle']['internalId']
+        mutation_log = MutationLog.objects.get(id=internal_id)
+
+        self.assertEqual(MutationLog.ERROR, mutation_log.status)
+        self.assertIn("date_valid_to_before_date_valid_from", mutation_log.error)
+        self.assertEqual(0, ContributionPlanBundle.objects.filter(code=code).count())
+
+    def test_contribution_plan_bundle_create_date_valid_to_after_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        code = "XYZ valid range " + str(time_stamp)
+        input_param = {
+            "code": code,
+            "name": "XYZ test valid range xyz - " + str(time_stamp),
+            "dateValidFrom": "2025-05-01",
+            "dateValidTo": "2025-06-01",
+        }
+        mutation_result = self.add_mutation("createContributionPlanBundle", input_param)
+        node = mutation_result['data']['mutationLogs']['edges'][0]['node']
+
+        self.assertEqual(MutationLog.SUCCESS, node['status'])
+        self.assertEqual(1, ContributionPlanBundle.objects.filter(code=code).count())
+
+        ContributionPlanBundle.objects.filter(code=code).delete()
+
+    def test_contribution_plan_bundle_create_date_valid_to_without_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        code = "XYZ default range " + str(time_stamp)
+        input_param = {
+            "code": code,
+            "name": "XYZ test default range xyz - " + str(time_stamp),
+            "dateValidTo": "2020-01-01",
+        }
+        mutation_result = self.send_mutation(
+            "createContributionPlanBundle", input_param, self.user_context.get_jwt(),
+            follow=False, allow_exceptions=False
+        )
+        internal_id = mutation_result['data']['createContributionPlanBundle']['internalId']
+        mutation_log = MutationLog.objects.get(id=internal_id)
+
+        self.assertEqual(MutationLog.ERROR, mutation_log.status)
+        self.assertIn("date_valid_to_before_date_valid_from", mutation_log.error)
+        self.assertEqual(0, ContributionPlanBundle.objects.filter(code=code).count())
+
+    def test_contribution_plan_bundle_create_date_valid_to_ahead_without_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        code = "XYZ default valid range " + str(time_stamp)
+        date_valid_to = datetime.date.today() + datetime.timedelta(days=1)
+        input_param = {
+            "code": code,
+            "name": "XYZ test default valid range xyz - " + str(time_stamp),
+            "dateValidTo": f"{date_valid_to}",
+        }
+        mutation_result = self.add_mutation("createContributionPlanBundle", input_param)
+        node = mutation_result['data']['mutationLogs']['edges'][0]['node']
+
+        self.assertEqual(MutationLog.SUCCESS, node['status'])
+        self.assertEqual(1, ContributionPlanBundle.objects.filter(code=code).count())
+
+        ContributionPlanBundle.objects.filter(code=code).delete()
+
+    def test_contribution_plan_bundle_update_7_date_valid_to_before_stored_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        contribution_plan_bundle = create_test_contribution_plan_bundle(
+            custom_props={
+                'code': "XYZ stored range " + str(time_stamp),
+                'date_valid_from': "2025-06-01",
+            }
+        )
+        input_param = {
+            "id": f"{contribution_plan_bundle.id}",
+            "dateValidTo": "2025-05-01",
+        }
+        mutation_result = self.send_mutation(
+            "updateContributionPlanBundle", input_param, self.user_context.get_jwt(),
+            follow=False, allow_exceptions=False
+        )
+        internal_id = mutation_result['data']['updateContributionPlanBundle']['internalId']
+        mutation_log = MutationLog.objects.get(id=internal_id)
+        contribution_plan_bundle.refresh_from_db()
+
+        self.assertEqual(MutationLog.ERROR, mutation_log.status)
+        self.assertIn("date_valid_to_before_date_valid_from", mutation_log.error)
+        self.assertIsNone(contribution_plan_bundle.date_valid_to)
+
+        contribution_plan_bundle.mutations.all().delete()
+        ContributionPlanBundle.objects.filter(id=contribution_plan_bundle.id).delete()
+
+    def test_contribution_plan_bundle_update_8_date_valid_to_after_stored_date_valid_from(self):
+        time_stamp = datetime.datetime.now()
+        contribution_plan_bundle = create_test_contribution_plan_bundle(
+            custom_props={
+                'code': "XYZ stored valid range " + str(time_stamp),
+                'date_valid_from': "2025-05-01",
+            }
+        )
+        input_param = {
+            "id": f"{contribution_plan_bundle.id}",
+            "dateValidTo": "2025-06-01",
+        }
+        mutation_result = self.add_mutation("updateContributionPlanBundle", input_param)
+        node = mutation_result['data']['mutationLogs']['edges'][0]['node']
+        contribution_plan_bundle.refresh_from_db()
+
+        self.assertEqual(MutationLog.SUCCESS, node['status'])
+        self.assertEqual(
+            datetime.date(2025, 6, 1), contribution_plan_bundle.date_valid_to.date()
+        )
+
+        contribution_plan_bundle.mutations.all().delete()
+        ContributionPlanBundle.objects.filter(id=contribution_plan_bundle.id).delete()
 
     def find_by_id_query(self, query_type, id, context=None):
         query = F'''

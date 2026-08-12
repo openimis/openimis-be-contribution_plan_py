@@ -13,6 +13,11 @@ from contribution_plan.gql.gql_mutations import ContributionPlanInputType, Contr
 from contribution_plan.models import ContributionPlan
 from django.utils.translation import gettext as _
 from django.core.exceptions import PermissionDenied, ValidationError
+from contribution_plan.gql.gql_mutations.validation import (
+    validate_date_validity_range,
+    validate_date_validity_range_on_create,
+    validate_date_validity_range_on_update,
+)
 
 
 class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -45,6 +50,7 @@ class CreateContributionPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMu
             raise PermissionDenied(_("unauthorized"))
         if ContributionPlanService.check_unique_code(data['code']):
             raise ValidationError(_("mutation.cp_code_duplicated"))
+        validate_date_validity_range_on_create(cls._model, **data)
 
 
 class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
@@ -60,6 +66,7 @@ class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMu
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_update_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+        validate_date_validity_range_on_update(cls._model, **data)
 
 
     @classmethod
@@ -112,3 +119,4 @@ class ReplaceContributionPlanMutation(BaseHistoryModelReplaceMutationMixin, Base
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_replace_contributionplan_perms):
             raise PermissionDenied(_("unauthorized"))
+        validate_date_validity_range(**data)

@@ -24,6 +24,11 @@ from contribution_plan.services import (
 )
 from django.utils.translation import gettext as _
 from django.core.exceptions import PermissionDenied, ValidationError
+from contribution_plan.gql.gql_mutations.validation import (
+    validate_date_validity_range,
+    validate_date_validity_range_on_create,
+    validate_date_validity_range_on_update,
+)
 
 
 class CreateContributionPlanBundleMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -52,6 +57,7 @@ class CreateContributionPlanBundleMutation(BaseHistoryModelCreateMutationMixin, 
             raise PermissionDenied(_("unauthorized"))
         if ContributionPlanBundleService.check_unique_code(data['code']):
             raise ValidationError(_("mutation.cpb_code_duplicated"))
+        validate_date_validity_range_on_create(cls._model, **data)
 
 
 class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
@@ -67,6 +73,7 @@ class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, 
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_update_contributionplanbundle_perms):
             raise PermissionDenied(_("unauthorized"))
+        validate_date_validity_range_on_update(cls._model, **data)
 
 
 class DeleteContributionPlanBundleMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
@@ -156,3 +163,4 @@ class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin
         super()._validate_mutation(user, **data)
         if not user.has_perms(ContributionPlanConfig.gql_mutation_replace_contributionplanbundle_perms):
             raise PermissionDenied(_("unauthorized"))
+        validate_date_validity_range(**data)

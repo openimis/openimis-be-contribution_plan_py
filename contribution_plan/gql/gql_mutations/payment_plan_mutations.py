@@ -12,6 +12,11 @@ from contribution_plan.models import PaymentPlan
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from contribution_plan.gql.gql_mutations.validation import (
+    validate_date_validity_range,
+    validate_date_validity_range_on_create,
+    validate_date_validity_range_on_update,
+)
 
 
 class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutation):
@@ -41,6 +46,7 @@ class CreatePaymentPlanMutation(BaseHistoryModelCreateMutationMixin, BaseMutatio
             raise ValidationError(_("mutation.authentication_required"))
         if PaymentPlanService.check_unique_code(data['code']):
             raise ValidationError(_("mutation.payment_plan_code_duplicated"))
+        validate_date_validity_range_on_create(cls._model, **data)
 
     class Input(PaymentPlanInputType):
         pass
@@ -59,6 +65,7 @@ class UpdatePaymentPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMutatio
 
         if PaymentPlanService.check_unique_code(data['code'], data['id']):
             raise ValidationError(_("mutation.payment_plan_code_duplicated"))
+        validate_date_validity_range_on_update(cls._model, **data)
 
     @classmethod
     def _mutate(cls, user, **data):
@@ -110,6 +117,7 @@ class ReplacePaymentPlanMutation(BaseHistoryModelReplaceMutationMixin, BaseRepla
         if type(user) is AnonymousUser or not user.id or not user.has_perms(
                 ContributionPlanConfig.gql_mutation_replace_paymentplan_perms):
             raise ValidationError(_("mutation.authentication_required"))
+        validate_date_validity_range(**data)
 
     class Input(PaymentPlanReplaceInputType):
         pass
