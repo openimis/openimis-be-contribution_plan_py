@@ -36,8 +36,8 @@ from contribution_plan.models import (
     PaymentPlan,
 )
 
-# Les identifiants tels que deployes. En changer un est incompatible avec les roles
-# existants : il faut mettre ce test a jour *et* accorder le nouveau droit.
+# The identifiers as deployed. Changing one is incompatible with the existing roles:
+# this test has to be updated *and* the new right granted.
 EXPECTED_RIGHTS = {
     "gql_query_contributionplanbundle_perms": ["151101"],
     "gql_query_contributionplanbundle_admins_perms": ["151105"],
@@ -59,9 +59,9 @@ EXPECTED_RIGHTS = {
     "gql_mutation_replace_paymentplan_perms": ["157106"],
 }
 
-# Les entrees de `permissions_map.json` qui portent ces identifiants. Le nom historique
-# du catalogue openIMIS n'est pas le nom django declare dans DJANGO_PERMS : ce qui doit
-# rester stable, c'est l'entier.
+# The `permissions_map.json` entries that carry these identifiers. The historical name
+# in the openIMIS catalogue is not the django name declared in DJANGO_PERMS: what has to
+# stay stable is the integer.
 EXPECTED_MAP_ENTRIES = {
     "contribution_plan.contributionplanbundle": "151101",
     "contribution_plan.create_contributionplanbundle": "151102",
@@ -100,7 +100,7 @@ MODEL_BY_ENTITY = {
 
 
 def _permissions_map():
-    """`permissions_map.json` vit dans l'assemblage, pas dans le paquet."""
+    """`permissions_map.json` lives in the assembly, not in the package."""
     from django.conf import settings
 
     candidates = [
@@ -130,7 +130,7 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
         self.assertEqual(set(_PERM_CFG.values()), declared)
 
     def test_perm_cfg_matches_config_attributes(self):
-        """`__load_config` ignore les cles sans attribut de classe."""
+        """`__load_config` ignores the keys with no class attribute."""
         missing = [key for key in _PERM_CFG if not hasattr(ContributionPlanConfig, key)]
         self.assertEqual(missing, [])
 
@@ -172,8 +172,8 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
 
     def test_dormant_keys_are_still_declared(self):
         """
-        Personne ne les lit ; elles doivent malgre tout porter leur identifiant, et non
-        [], sinon le jour ou un controle les lira il accordera l'action a tous.
+        Nobody reads them; they must carry their identifier all the same, and not [],
+        otherwise the day a check does read them it will grant the action to everybody.
         """
         for key in DORMANT_KEYS:
             with self.subTest(key=key):
@@ -187,7 +187,7 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
         actual = {name: mapping.get(name) for name in EXPECTED_MAP_ENTRIES}
         self.assertEqual(actual, EXPECTED_MAP_ENTRIES)
 
-    # --- le point d'acces par le modele -----------------------------------
+    # --- the access point through the model -------------------------------
     def test_each_model_exposes_every_action_of_its_entity(self):
         for entity, model in MODEL_BY_ENTITY.items():
             for action in DJANGO_PERMS[entity]:
@@ -198,7 +198,7 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
                     self.assertTrue(model.get_rights(action))
 
     def test_model_returns_none_for_an_undeclared_action(self):
-        """None signifie "aucune regle" : l'appelant doit echouer ferme."""
+        """None means "no rule": the caller must fail closed."""
         for model in MODEL_BY_ENTITY.values():
             with self.subTest(model=model.__name__):
                 self.assertIsNone(model.get_rights("nosuchaction"))
