@@ -53,15 +53,15 @@ class ContributionPlanBundle(core_models.HistoryBusinessModel):
     @classmethod
     def get_rights(cls, action):
         """
-        Les droits regissant une action sur cette entite, pour GraphQL, REST et FHIR.
+        The rights governing an action on this entity, for GraphQL, REST and FHIR.
 
-        Ne redeclare rien : la table des droits est
-        `contribution_plan.apps.DJANGO_PERMS`, par entite puis par action, et
-        `configured_perms` y lit la valeur *configuree* - celle que
-        ModuleConfiguration a pu surcharger - et non le defaut declare. La lecture se
-        fait dans la methode, jamais a l'import : les cles `_perms` ne valent leur
-        valeur qu'apres `ready()`, et un instantane pris a l'import capturerait le
-        placeholder vide, que `has_perms` accorde a tout le monde.
+        Redeclares nothing: the rights table is
+        `contribution_plan.apps.DJANGO_PERMS`, by entity then by action, and
+        `configured_perms` reads the *configured* value there - the one
+        ModuleConfiguration may have overridden - and not the declared default. The
+        read happens inside the method, never at import time: the `_perms` keys only
+        hold their value after `ready()`, and a snapshot taken at import would capture
+        the empty placeholder, which `has_perms` grants to everybody.
         """
         from contribution_plan.apps import configured_perms
 
@@ -84,7 +84,7 @@ class ContributionPlan(GenericPlan):
 
     @classmethod
     def get_rights(cls, action):
-        """Point d'acces aux droits de l'entite `contributionPlan`."""
+        """Access point to the rights of the `contributionPlan` entity."""
         from contribution_plan.apps import configured_perms
 
         return configured_perms("contributionPlan", action)
@@ -96,7 +96,7 @@ class PaymentPlan(GenericPlan):
 
     @classmethod
     def get_rights(cls, action):
-        """Point d'acces aux droits de l'entite `paymentPlan`."""
+        """Access point to the rights of the `paymentPlan` entity."""
         from contribution_plan.apps import configured_perms
 
         return configured_perms("paymentPlan", action)
@@ -115,14 +115,13 @@ class ContributionPlanBundleDetailsManager(models.Manager):
 
 
 class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
-    # Une ligne de bundle n'a pas de droits propres : la creer, la modifier ou la
-    # supprimer, c'est composer le bundle, et les mutations le confirment - elles
-    # verifient toutes `gql_mutation_*_contributionplanbundle_perms`, jamais celui du
-    # plan de contribution. `scope_parent` dit laquelle des deux cles etrangeres est
-    # proprietaire : `contribution_plan` designe le plan *reference* par la ligne, un
-    # catalogue partage entre bundles, et ne gouverne pas qui peut composer ce bundle-ci.
-    # Le parent est declare et non deduit, justement parce que les deux FK se
-    # ressemblent.
+    # A bundle line has no rights of its own: creating, modifying or deleting it means
+    # composing the bundle, and the mutations confirm it - they all check
+    # `gql_mutation_*_contributionplanbundle_perms`, never the contribution plan's.
+    # `scope_parent` says which of the two foreign keys is the owner:
+    # `contribution_plan` denotes the plan *referenced* by the line, a catalogue shared
+    # between bundles, and does not govern who may compose this particular bundle. The
+    # parent is declared and not inferred, precisely because the two FKs look alike.
     scope_parent = "contribution_plan_bundle"
 
     contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, db_column="ContributionPlanBundleUUID",

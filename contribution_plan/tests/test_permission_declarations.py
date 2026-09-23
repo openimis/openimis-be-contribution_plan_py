@@ -1,19 +1,19 @@
 """
-Garde-fous sur la declaration des droits de contribution_plan.
+Guard rails on contribution_plan's rights declaration.
 
-Meme structure que `claim` et `product` : `DJANGO_PERMS` par entite puis par action,
-`_PERM_CFG` qui en derive les cles de config, et un `get_rights` sur chaque modele
-principal qui n'est qu'un point d'acces.
+Same structure as `claim` and `product`: `DJANGO_PERMS` by entity then by action,
+`_PERM_CFG` deriving the config keys from it, and a `get_rights` on each main model
+which is only an access point.
 
-Ce qui est verrouille ici, c'est le couple entite/action, pas seulement les valeurs :
-  * un identifiant a un seul endroit (DJANGO_PERMS), donc pas de derive entre le
-    DEFAULT_CFG et le controle ;
-  * une cle de config sans attribut de classe n'est jamais chargee par `__load_config`
-    et sa lecture leve AttributeError - le droit devient inapplicable ;
-  * `has_perms([])` renvoie True, donc une liste vide accorde a tous.
+What is locked down here is the entity/action pair, not only the values:
+  * an identifier in one place only (DJANGO_PERMS), hence no drift between the
+    DEFAULT_CFG and the check;
+  * a config key with no class attribute is never loaded by `__load_config` and
+    reading it raises AttributeError - the right becomes unenforceable;
+  * `has_perms([])` returns True, so an empty list grants to everybody.
 
-Le module porte trois entites separees (1511xx / 1512xx / 1571xx) : aucun identifiant
-n'est partage, et le test ci-dessous le verifie.
+The module carries three separate entities (1511xx / 1512xx / 1571xx): no identifier is
+shared, and the test below verifies it.
 """
 
 import json
@@ -83,9 +83,9 @@ EXPECTED_MAP_ENTRIES = {
     "contribution_plan.replace_paymentplan": "157106",
 }
 
-# Cles declarees mais qu'aucun site d'appel ne lit. Conservees parce que les
-# identifiants sont deja accordes a des roles deployes ; listees ici pour que l'ajout
-# d'un lecteur, ou la suppression de la cle, soit une decision visible.
+# Keys declared but which no call site reads. Kept because the identifiers are already
+# granted to deployed roles; listed here so that adding a reader, or removing the key,
+# is a visible decision.
 DORMANT_KEYS = {
     "gql_query_contributionplanbundle_admins_perms",
     "gql_query_contributionplan_admins_perms",
@@ -146,7 +146,7 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
                 )
 
     def test_the_three_entities_share_no_right_id(self):
-        """Trois objets metier distincts, trois blocs d'identifiants disjoints."""
+        """Three distinct business objects, three disjoint blocks of identifiers."""
         seen = {}
         for entity, actions in DJANGO_PERMS.items():
             for action, (_, right_id) in actions.items():
@@ -212,11 +212,11 @@ class ContributionPlanPermissionDeclarationTestCase(TestCase):
         finally:
             ContributionPlanConfig.gql_query_paymentplan_perms = original
 
-    # --- la sous-ressource -------------------------------------------------
+    # --- the sub-resource --------------------------------------------------
     def test_bundle_details_delegates_to_the_bundle(self):
         """
-        Deux FK, un seul proprietaire : composer un bundle prend le droit du bundle,
-        pas celui du plan de contribution qu'il reference.
+        Two FKs, a single owner: composing a bundle takes the bundle's right, not that
+        of the contribution plan it references.
         """
         from core.rights_scope import scope_parent_of
 

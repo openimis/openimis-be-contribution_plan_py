@@ -176,8 +176,8 @@ class Query(graphene.ObjectType):
         return gql_optimizer.query(query, info)
 
     def resolve_validate_contribution_plan_code(self, info, **kwargs):
-        # Un validateur d'unicite est un oracle d'existence : sans droit, il permet
-        # d'enumerer les codes. Meme droit que la lecture de l'entite concernee.
+        # A uniqueness validator is an existence oracle: without a right, it allows
+        # enumerating the codes. Same right as reading the entity concerned.
         if not info.context.user.has_perms(
             ContributionPlanConfig.gql_query_contributionplan_perms
         ):

@@ -5,21 +5,21 @@ from core.rights_declaration import RightsDeclaration
 MODULE_NAME = "contribution_plan"
 
 
-# Droits, par entite puis par action.
+# Rights, by entity then by action.
 #
-# Le module porte trois entites metier distinctes, chacune avec son propre bloc
-# d'identifiants : contributionPlanBundle (1511xx), contributionPlan (1512xx) et
-# paymentPlan (1571xx). Ce sont bien trois objets separes - un bundle regroupe des
-# plans de contribution, un payment plan est un objet a part - et non trois vues d'un
-# meme objet : aucun identifiant n'est partage entre eux.
+# The module carries three distinct business entities, each with its own block of
+# identifiers: contributionPlanBundle (1511xx), contributionPlan (1512xx) and
+# paymentPlan (1571xx). These really are three separate objects - a bundle groups
+# contribution plans, a payment plan is an object apart - and not three views of one
+# object: no identifier is shared between them.
 #
-# `replace` est une action metier et non un `update` : remplacer cree une nouvelle
-# version de l'objet et cloture l'ancienne (`replacement_uuid`), la ou `update` modifie
-# l'objet en place. openIMIS lui a donne son propre identifiant (le 06 de chaque bloc),
-# on ne le force pas dans le verbe canonique.
+# `replace` is a business action and not an `update`: replacing creates a new version of
+# the object and closes the old one (`replacement_uuid`), where `update` modifies the
+# object in place. openIMIS gave it its own identifier (the 06 of each block), and we do
+# not force it into the canonical verb.
 #
-# `queryAdmins` (le 05 de chaque bloc) est une declaration dormante : voir le
-# commentaire sur les attributs correspondants dans ContributionPlanConfig.
+# `queryAdmins` (the 05 of each block) is a dormant declaration: see the comment on the
+# matching attributes in ContributionPlanConfig.
 DJANGO_PERMS = {
     "contributionPlanBundle": {
         "query": ("contribution_plan.view_contributionplanbundle", 151101),
@@ -76,23 +76,25 @@ configured_perms = RIGHTS.configured
 require = RIGHTS.require
 
 
-# Vide : le module n'a aucun reglage hors droits, et les droits ne passent plus par la
-# configuration. `ready()` est conserve pour qu'un reglage futur ait ou atterrir.
+# Empty: the module has no setting outside the rights, and the rights no longer go
+# through the configuration. `ready()` is kept so that a future setting has somewhere to
+# land.
 DEFAULT_CFG = {}
 
 
 class ContributionPlanConfig(AppConfig):
     name = MODULE_NAME
 
-    # Droits: constantes issues de DJANGO_PERMS, plus surchargeables. Ils ne
-    # passent plus par le DEFAULT_CFG ni par ready(): `ModuleConfiguration.get_or_default`
-    # ignore desormais toute cle `_perms` stockee en base.
+    # Rights: constants derived from DJANGO_PERMS, no longer overridable. They go
+    # neither through DEFAULT_CFG nor through ready():
+    # `ModuleConfiguration.get_or_default` now ignores any `_perms` key stored in the
+    # database.
     gql_query_contributionplanbundle_perms = RIGHTS.perms("contributionPlanBundle", "query")
-    # Declaration dormante : aucun resolver ni mutation ne lit cette cle (ni ici, ni
-    # dans un autre module). On la conserve parce que l'identifiant 151105 est deja
-    # accorde a des roles deployes, et on lui laisse sa valeur declaree plutot que []
-    # - `has_perms([])` renvoie True, donc une liste vide accorderait a tout le monde
-    # l'action que cette cle finira par garder.
+    # A dormant declaration: no resolver and no mutation reads this key (neither here
+    # nor in another module). We keep it because identifier 151105 is already granted to
+    # deployed roles, and we leave it its declared value rather than [] -
+    # `has_perms([])` returns True, so an empty list would grant everybody the action
+    # this key will eventually guard.
     gql_query_contributionplanbundle_admins_perms = RIGHTS.perms("contributionPlanBundle", "queryAdmins")
 
     gql_query_contributionplan_perms = RIGHTS.perms("contributionPlan", "query")
