@@ -176,14 +176,28 @@ class Query(graphene.ObjectType):
         return gql_optimizer.query(query, info)
 
     def resolve_validate_contribution_plan_code(self, info, **kwargs):
+        # Un validateur d'unicite est un oracle d'existence : sans droit, il permet
+        # d'enumerer les codes. Meme droit que la lecture de l'entite concernee.
+        if not info.context.user.has_perms(
+            ContributionPlanConfig.gql_query_contributionplan_perms
+        ):
+            raise PermissionError("Unauthorized")
         errors = ContributionPlanService.check_unique_code(code=kwargs['contribution_plan_code'])
         return False if errors else True
 
     def resolve_validate_contribution_plan_bundle_code(self, info, **kwargs):
+        if not info.context.user.has_perms(
+            ContributionPlanConfig.gql_query_contributionplanbundle_perms
+        ):
+            raise PermissionError("Unauthorized")
         errors = ContributionPlanBundleService.check_unique_code(code=kwargs['contribution_plan_bundle_code'])
         return False if errors else True
 
     def resolve_validate_payment_plan_code(self, info, **kwargs):
+        if not info.context.user.has_perms(
+            ContributionPlanConfig.gql_query_paymentplan_perms
+        ):
+            raise PermissionError("Unauthorized")
         errors = PaymentPlanService.check_unique_code(code=kwargs['payment_plan_code'])
         return False if errors else True
 
