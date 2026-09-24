@@ -98,11 +98,11 @@ class ContributionPlanConfig(AppConfig):
     gql_query_contributionplanbundle_admins_perms = RIGHTS.perms("contributionPlanBundle", "queryAdmins")
 
     gql_query_contributionplan_perms = RIGHTS.perms("contributionPlan", "query")
-    # Declaration dormante, meme raison que ci-dessus (identifiant 151205).
+    # A dormant declaration, same reason as above (identifier 151205).
     gql_query_contributionplan_admins_perms = RIGHTS.perms("contributionPlan", "queryAdmins")
 
     gql_query_paymentplan_perms = RIGHTS.perms("paymentPlan", "query")
-    # Declaration dormante, meme raison que ci-dessus (identifiant 157105).
+    # A dormant declaration, same reason as above (identifier 157105).
     gql_query_paymentplan_admins_perms = RIGHTS.perms("paymentPlan", "queryAdmins")
 
     gql_mutation_create_contributionplanbundle_perms = RIGHTS.perms("contributionPlanBundle", "create")
