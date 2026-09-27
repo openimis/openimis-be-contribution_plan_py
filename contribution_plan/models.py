@@ -50,6 +50,23 @@ class ContributionPlanBundle(core_models.HistoryBusinessModel):
             pass
         return queryset
 
+    @classmethod
+    def get_rights(cls, action):
+        """
+        The rights governing an action on this entity, for GraphQL, REST and FHIR.
+
+        Redeclares nothing: the rights table is
+        `contribution_plan.apps.DJANGO_PERMS`, by entity then by action, and
+        `configured_perms` reads the *configured* value there - the one
+        ModuleConfiguration may have overridden - and not the declared default. The
+        read happens inside the method, never at import time: the `_perms` keys only
+        hold their value after `ready()`, and a snapshot taken at import would capture
+        the empty placeholder, which `has_perms` grants to everybody.
+        """
+        from contribution_plan.apps import configured_perms
+
+        return configured_perms("contributionPlanBundle", action)
+
     class Meta:
         db_table = 'tblContributionPlanBundle'
 
@@ -65,11 +82,24 @@ class ContributionPlanManager(models.Manager):
 
 class ContributionPlan(GenericPlan):
 
+    @classmethod
+    def get_rights(cls, action):
+        """Access point to the rights of the `contributionPlan` entity."""
+        from contribution_plan.apps import configured_perms
+
+        return configured_perms("contributionPlan", action)
 
     class Meta:
         db_table = 'tblContributionPlan'
 
 class PaymentPlan(GenericPlan):
+
+    @classmethod
+    def get_rights(cls, action):
+        """Access point to the rights of the `paymentPlan` entity."""
+        from contribution_plan.apps import configured_perms
+
+        return configured_perms("paymentPlan", action)
 
     class Meta:
         db_table = 'tblPaymentPlan'
@@ -85,6 +115,15 @@ class ContributionPlanBundleDetailsManager(models.Manager):
 
 
 class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
+    # A bundle line has no rights of its own: creating, modifying or deleting it means
+    # composing the bundle, and the mutations confirm it - they all check
+    # `gql_mutation_*_contributionplanbundle_perms`, never the contribution plan's.
+    # `scope_parent` says which of the two foreign keys is the owner:
+    # `contribution_plan` denotes the plan *referenced* by the line, a catalogue shared
+    # between bundles, and does not govern who may compose this particular bundle. The
+    # parent is declared and not inferred, precisely because the two FKs look alike.
+    scope_parent = "contribution_plan_bundle"
+
     contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, db_column="ContributionPlanBundleUUID",
                                                  on_delete=models.deletion.DO_NOTHING)
     contribution_plan = models.ForeignKey(ContributionPlan, db_column="ContributionPlanUUID",
