@@ -77,7 +77,7 @@ class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMu
             data.pop('client_mutation_id')
         if "client_mutation_label" in data:
             data.pop('client_mutation_label')
-        updated_object = cls._model.objects.filter(id=data['id']).first()
+        updated_object = cls._target_queryset(user).filter(id=data['id']).first()
         benefit_plan_type__model = data.pop('benefit_plan_type__model', None)
         if benefit_plan_type__model:
             content_type = ContentType.objects.get(model=benefit_plan_type__model.lower())
