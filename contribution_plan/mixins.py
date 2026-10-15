@@ -15,10 +15,21 @@ class GenericPlanManager(HistoryModelManager):
 
 
 class GenericPlanQuerysetMixin:
+    """Row security only.
+
+    Soft-delete scoping deliberately does not happen here. get_queryset is
+    handed the queryset and the user, never the filter arguments, so it cannot
+    tell whether the caller asked for deleted rows - and a queryset already
+    narrowed to is_deleted=False cannot be widened again by a filter. Forcing
+    it here is what made "show deleted" resolve to is_deleted=True AND
+    is_deleted=False, an empty list for every row (OP-3180).
+
+    The default now comes from append_validity_filter(), which the resolvers
+    call and which does see the arguments.
+    """
 
     @classmethod
     def get_queryset(cls, queryset, user):
-        queryset = cls.filter_queryset(queryset)
         if isinstance(user, ResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:
