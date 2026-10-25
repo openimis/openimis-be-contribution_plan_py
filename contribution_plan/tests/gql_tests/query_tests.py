@@ -54,6 +54,23 @@ class QueryTest(TestCase):
         converted_id = base64.b64decode(result[0]['node']['id']).decode('utf-8').split(':')[1]
         self.assertEqual(UUID(converted_id), id)
 
+    def test_filter_payment_plans_by_benefit_plan_model(self):
+        # The payroll form's PaymentPlanPicker sends benefitPlanType_Model (OP-3263).
+        def codes(model):
+            query = F'''
+            {{
+                paymentPlan(benefitPlanType_Model: "{model}", isDeleted: false) {{
+                    edges {{ node {{ code }} }}
+                }}
+            }}
+            '''
+            result = self.graph_client.execute(query, context=self.user_context.get_request())
+            self.assertNotIn('errors', result, result.get('errors'))
+            return [edge['node']['code'] for edge in result['data']['paymentPlan']['edges']]
+
+        self.assertIn(self.test_payment_plan.code, codes("product"))
+        self.assertNotIn(self.test_payment_plan.code, codes("benefitplan"))
+
     def test_find_contribution_plan_details_existing(self):
         id = self.test_contribution_plan_details.id
         result = self.find_by_id_query("contributionPlanBundleDetails", id)
