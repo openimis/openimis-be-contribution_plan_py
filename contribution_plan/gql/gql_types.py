@@ -151,6 +151,7 @@ class PaymentPlanGQLType(DjangoObjectType):
             "name": ["exact", "istartswith", "icontains", "iexact"],
             'benefit_plan_id': ["exact"],
             'benefit_plan_type': ["exact"],
+            'benefit_plan_type__model': ["exact"],
             "calculation": ["exact"],
             "periodicity": ["exact", "lt", "lte", "gt", "gte"],
             "date_created": ["exact", "lt", "lte", "gt", "gte"],
