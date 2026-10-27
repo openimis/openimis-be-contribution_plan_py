@@ -13,7 +13,8 @@ from core.gql.gql_mutations.base_mutation import (
 from contribution_plan.gql.gql_mutations import (
     ContributionPlanBundleInputType,
     ContributionPlanBundleUpdateInputType,
-    ContributionPlanBundleReplaceInputType
+    ContributionPlanBundleReplaceInputType,
+    LiveTargetMixin,
 )
 from contribution_plan.models import (
     ContributionPlanBundle,
@@ -60,7 +61,7 @@ class CreateContributionPlanBundleMutation(BaseHistoryModelCreateMutationMixin, 
         validate_date_validity_range_on_create(cls._model, **data)
 
 
-class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
+class UpdateContributionPlanBundleMutation(LiveTargetMixin, BaseHistoryModelUpdateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
@@ -76,7 +77,7 @@ class UpdateContributionPlanBundleMutation(BaseHistoryModelUpdateMutationMixin, 
         validate_date_validity_range_on_update(cls._model, **data)
 
 
-class DeleteContributionPlanBundleMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
+class DeleteContributionPlanBundleMutation(LiveTargetMixin, BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle
@@ -91,7 +92,7 @@ class DeleteContributionPlanBundleMutation(BaseHistoryModelDeleteMutationMixin, 
             raise PermissionDenied(_("unauthorized"))
 
 
-class ReplaceContributionPlanBundleMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
+class ReplaceContributionPlanBundleMutation(LiveTargetMixin, BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
     _mutation_class = "ContributionPlanBundleMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundle

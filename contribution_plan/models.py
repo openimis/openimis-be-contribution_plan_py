@@ -41,7 +41,10 @@ class ContributionPlanBundle(core_models.HistoryBusinessModel):
 
     @classmethod
     def get_queryset(cls, queryset, user):
-        queryset = cls.filter_queryset(queryset)
+        # Row security only: whether deleted rows are in scope is decided by the
+        # resolvers through append_validity_filter (see GenericPlanQuerysetMixin).
+        if queryset is None:
+            queryset = cls.objects.all()
         if isinstance(user, ResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:
@@ -133,7 +136,10 @@ class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
 
     @classmethod
     def get_queryset(cls, queryset, user):
-        queryset = cls.filter_queryset(queryset)
+        # Row security only: whether deleted rows are in scope is decided by the
+        # resolvers through append_validity_filter (see GenericPlanQuerysetMixin).
+        if queryset is None:
+            queryset = cls.objects.all()
         if isinstance(user, ResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:

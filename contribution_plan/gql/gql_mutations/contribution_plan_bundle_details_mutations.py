@@ -4,7 +4,8 @@ from core.gql.gql_mutations.base_mutation  import BaseMutation, BaseDeleteMutati
     BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
     BaseHistoryModelDeleteMutationMixin, BaseHistoryModelReplaceMutationMixin
 from contribution_plan.gql.gql_mutations import ContributionPlanBundleDetailsInputType, \
-    ContributionPlanBundleDetailsUpdateInputType, ContributionPlanBundleDetailsReplaceInputType
+    ContributionPlanBundleDetailsUpdateInputType, ContributionPlanBundleDetailsReplaceInputType, \
+    LiveTargetMixin
 from contribution_plan.models import ContributionPlanBundleDetails
 from django.utils.translation import gettext as _
 from django.core.exceptions import PermissionDenied
@@ -32,7 +33,7 @@ class CreateContributionPlanBundleDetailsMutation(BaseHistoryModelCreateMutation
 
 
 
-class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutationMixin, BaseMutation):
+class UpdateContributionPlanBundleDetailsMutation(LiveTargetMixin, BaseHistoryModelUpdateMutationMixin, BaseMutation):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
@@ -48,7 +49,9 @@ class UpdateContributionPlanBundleDetailsMutation(BaseHistoryModelUpdateMutation
         validate_date_validity_range_on_update(cls._model, **data)
 
 
-class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation):
+class DeleteContributionPlanBundleDetailsMutation(
+        LiveTargetMixin, BaseHistoryModelDeleteMutationMixin, BaseDeleteMutation
+):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
@@ -63,7 +66,9 @@ class DeleteContributionPlanBundleDetailsMutation(BaseHistoryModelDeleteMutation
             raise PermissionDenied(_("unauthorized"))
 
 
-class ReplaceContributionPlanBundleDetailsMutation(BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation):
+class ReplaceContributionPlanBundleDetailsMutation(
+        LiveTargetMixin, BaseHistoryModelReplaceMutationMixin, BaseReplaceMutation
+):
     _mutation_class = "ContributionPlanBundleDetailsMutation"
     _mutation_module = "contribution_plan"
     _model = ContributionPlanBundleDetails
