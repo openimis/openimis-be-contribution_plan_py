@@ -29,11 +29,12 @@ class GenericPlanQuerysetMixin:
     """
 
     @classmethod
-    def get_queryset(cls, queryset, user):
+    def get_queryset(cls, queryset, user, *, validity=None, audits=None):
+        queryset = cls.apply_row_filters(queryset, validity, audits)
         if isinstance(user, ResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:
-            return queryset.filter(id=-1)
+            return cls.no_rows(queryset)
         if settings.ROW_SECURITY:
             pass
         return queryset
