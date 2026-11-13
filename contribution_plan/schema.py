@@ -2,6 +2,7 @@ import graphene
 import graphene_django_optimizer as gql_optimizer
 from django.contrib.contenttypes.models import ContentType
 
+from django.apps import apps
 from django.db.models import Q
 
 from core.schema import signal_mutation_module_validate
@@ -87,16 +88,16 @@ class Query(graphene.ObjectType):
 
     def resolve_contribution_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_contributionplan_perms):
-           raise PermissionError("Unauthorized")
+            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
-        
+
         model = ContributionPlan
         if kwargs.get('showHistory', False):
             query = model.history.filter(*filters).all().as_instances()
         else:
             query = model.objects.filter(*filters).all()
-            
+
         return gql_optimizer.query(query, info)
 
     def resolve_contribution_plan_bundle(self, info, **kwargs):
@@ -121,7 +122,6 @@ class Query(graphene.ObjectType):
         else:
             query = model.objects.filter(*filters).all()
 
-
         if show_history and (calculation or insurance_product):
             filtered_details = ContributionPlanBundleDetails.objects
             if calculation:
@@ -134,7 +134,7 @@ class Query(graphene.ObjectType):
                 filtered_details = filtered_details.filter(
                     contribution_plan__benefit_plan_id=insurance_product,
                     contribution_plan__benefit_plan_type=product_content_type,
-                    
+
                 ).values_list('contribution_plan_bundle', flat=True)
             query = query.filter(id__in=filtered_details)
         else:
@@ -150,22 +150,20 @@ class Query(graphene.ObjectType):
                     contributionplanbundledetails__contribution_plan__benefit_plan_type=product_content_type,
                 ).distinct()
 
-
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
     def resolve_contribution_plan_bundle_details(self, info, **kwargs):
         if not (info.context.user.has_perms(
                 ContributionPlanConfig.gql_query_contributionplanbundle_perms) and info.context.user.has_perms(
                 ContributionPlanConfig.gql_query_contributionplan_perms)):
-           raise PermissionError("Unauthorized")
+            raise PermissionError("Unauthorized")
         filters = append_validity_filter(**kwargs)
         query = ContributionPlanBundleDetails.objects
         return gql_optimizer.query(query.filter(*filters).all(), info)
 
-        
     def resolve_payment_plan(self, info, **kwargs):
         if not info.context.user.has_perms(ContributionPlanConfig.gql_query_paymentplan_perms):
-           raise PermissionError("Unauthorized")
+            raise PermissionError("Unauthorized")
 
         filters = append_validity_filter(**kwargs)
         model = PaymentPlan
@@ -207,12 +205,12 @@ class Mutation(graphene.ObjectType):
     create_contribution_plan = CreateContributionPlanMutation.Field()
     create_contribution_plan_bundle_details = CreateContributionPlanBundleDetailsMutation.Field()
     create_payment_plan = CreatePaymentPlanMutation.Field()
-    
+
     update_contribution_plan_bundle = UpdateContributionPlanBundleMutation.Field()
     update_contribution_plan = UpdateContributionPlanMutation.Field()
     update_contribution_plan_bundle_details = UpdateContributionPlanBundleDetailsMutation.Field()
     update_payment_plan = UpdatePaymentPlanMutation.Field()
-    
+
     delete_contribution_plan_bundle = DeleteContributionPlanBundleMutation.Field()
     delete_contribution_plan = DeleteContributionPlanMutation.Field()
     delete_contribution_plan_bundle_details = DeleteContributionPlanBundleDetailsMutation.Field()
@@ -226,7 +224,7 @@ class Mutation(graphene.ObjectType):
 
 def on_contribution_plan_mutation(sender, **kwargs):
     cp_uuid = kwargs['data'].get('uuid', None) or kwargs['data'].get('id', None)
-    if cp_uuid is None :
+    if cp_uuid is None:
         return []
     if "ContributionPlanMutation" in str(sender._mutation_class):
         impacted_contribution_plan = ContributionPlan.objects.get(id=cp_uuid)

@@ -1,10 +1,11 @@
-import datetime
 import base64
 from unittest import mock
-from django.test import TestCase
 
 import graphene
-from contribution_plan.tests.helpers import *
+import json
+from core.models import User
+from contribution_plan.models import PaymentPlan
+from contribution_plan.tests.helpers import create_test_payment_plan
 from contribution_plan import schema as contribution_plan_schema
 from calculation.calculation_rule import ContributionValuationRule
 from core import datetime
@@ -12,6 +13,7 @@ from product.test_helpers import create_test_product
 from graphene import Schema
 from graphene.test import Client
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
+
 
 class MutationTestPaymentPlan(openIMISGraphQLTestCase):
 
@@ -22,9 +24,9 @@ class MutationTestPaymentPlan(openIMISGraphQLTestCase):
     def setUpClass(cls):
         super(MutationTestPaymentPlan, cls).setUpClass()
         if not User.objects.filter(username='Admin').exists():
-            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
+            User.objects.create_superuser(username='Admin', password='S\\/pe®Pąßw0rd™')
         cls.user = User.objects.filter(username='Admin').first()
-        cls.user_context = BaseTestContext(cls.user)        
+        cls.user_context = BaseTestContext(cls.user)
         cls.test_payment_plan = create_test_payment_plan()
         cls.test_calculation = ContributionValuationRule.uuid
         cls.test_calculation2 = ContributionValuationRule.uuid
@@ -159,9 +161,8 @@ class MutationTestPaymentPlan(openIMISGraphQLTestCase):
 
     def add_mutation(self, mutation_type, input_params, context=None):
 
-        mutation_result = self.send_mutation(mutation_type, input_params, cls.user_context.get_jwt()) 
+        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt())
         return mutation_result
-
 
     def execute_mutation(self, mutation, context=None):
         if context is None:

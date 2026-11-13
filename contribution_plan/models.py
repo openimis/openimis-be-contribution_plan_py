@@ -2,8 +2,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from core import models as core_models, fields
-from core.signals import Signal
+from core import models as core_models
 from graphql import ResolveInfo
 from contribution_plan.mixins import GenericPlanQuerysetMixin, GenericPlanManager
 
@@ -96,6 +95,7 @@ class ContributionPlan(GenericPlan):
     class Meta:
         db_table = 'tblContributionPlan'
 
+
 class PaymentPlan(GenericPlan):
 
     @classmethod
@@ -156,7 +156,7 @@ class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
 
 class ContributionPlanMutation(core_models.UUIDModel):
     contribution_plan = models.ForeignKey(ContributionPlan, models.DO_NOTHING,
-                                 related_name='mutations')
+                                          related_name='mutations')
     mutation = models.ForeignKey(
         core_models.MutationLog, models.DO_NOTHING, related_name='contribution_plan')
 
@@ -167,7 +167,7 @@ class ContributionPlanMutation(core_models.UUIDModel):
 
 class ContributionPlanBundleMutation(core_models.UUIDModel, core_models.ObjectMutation):
     contribution_plan_bundle = models.ForeignKey(ContributionPlanBundle, models.DO_NOTHING,
-                                 related_name='mutations')
+                                                 related_name='mutations')
     mutation = models.ForeignKey(
         core_models.MutationLog, models.DO_NOTHING, related_name='contribution_plan_bundle')
 

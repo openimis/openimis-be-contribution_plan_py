@@ -1,6 +1,5 @@
 import graphene
 from django.core.exceptions import PermissionDenied
-from django.contrib.contenttypes.models import ContentType
 
 from contribution_plan.apps import ContributionPlanConfig
 from contribution_plan.gql.util import model_obj_to_json

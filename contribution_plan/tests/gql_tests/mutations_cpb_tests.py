@@ -2,12 +2,13 @@ import datetime
 import base64
 import json
 from unittest import mock
-from django.test import TestCase
 
 import graphene
 from core.models import MutationLog
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
-from contribution_plan.tests.helpers import *
+from core.models import User
+from contribution_plan.models import ContributionPlanBundle
+from contribution_plan.tests.helpers import create_test_contribution_plan_bundle
 from core.test_helpers import create_test_interactive_user
 from contribution_plan import schema as contribution_plan_schema
 from graphene import Schema
@@ -16,7 +17,6 @@ from graphene.test import Client
 
 class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
 
-
     class AnonymousUserContext:
         user = mock.Mock(is_anonymous=True)
 
@@ -24,7 +24,7 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
     def setUpClass(cls):
         super(MutationTestContributionPlanBundle, cls).setUpClass()
         if not User.objects.filter(username='Admin').exists():
-            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
+            User.objects.create_superuser(username='Admin', password='S\\/pe®Pąßw0rd™')
         cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
 
@@ -61,7 +61,7 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
         input_param = {
             "name": "XYZ test name xyz - " + str(time_stamp),
         }
-        result_mutation = self.send_mutation("createContributionPlanBundle", input_param, self.user_context.get_jwt(),  follow=False, allow_exceptions=False)
+        result_mutation = self.send_mutation("createContributionPlanBundle", input_param, self.user_context.get_jwt(), follow=False, allow_exceptions=False)
         self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_bundle_delete_single_deletion(self):
@@ -116,7 +116,6 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
 
     def test_contribution_plan_bundle_update_3_existing_date_valid_from_change(self):
         id = self.test_contribution_plan_bundle.id
-        version = self.test_contribution_plan_bundle.version
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
@@ -148,7 +147,6 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
 
     def test_contribution_plan_bundle_update_5_update_field_code_not_editable(self):
         id = self.test_contribution_plan_bundle.id
-        version = self.test_contribution_plan_bundle.version
         input_param = {
             "id": f"{id}",
             "code": "XYZ test name xxxxx",
@@ -157,8 +155,6 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
         self.assertEqual(True, 'errors' in result_mutation)
 
     def test_contribution_plan_bundle_update_6_without_id_field(self):
-        id = self.test_contribution_plan_bundle.id
-        version = self.test_contribution_plan_bundle.version
         input_param = {
             "name": "XYZ test name xxxxx",
         }
@@ -352,9 +348,8 @@ class MutationTestContributionPlanBundle(openIMISGraphQLTestCase):
 
     def add_mutation(self, mutation_type, input_params, context=None):
 
-        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt()) 
+        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt())
         return mutation_result
-
 
     def execute_mutation(self, mutation, context=None):
         if context is None:

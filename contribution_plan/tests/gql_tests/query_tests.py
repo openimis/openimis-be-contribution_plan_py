@@ -6,12 +6,11 @@ from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 from graphene import Schema
 from graphene.test import Client
-from unittest import mock
 from uuid import UUID
 from core.test_helpers import create_test_interactive_user
-from contribution_plan.tests.helpers import *
+from contribution_plan.tests.helpers import create_test_contribution_plan, create_test_contribution_plan_bundle, create_test_contribution_plan_bundle_details, create_test_payment_plan
 from contribution_plan import schema as contribution_plan_schema
-from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
+from core.models.openimis_graphql_test_case import BaseTestContext
 
 
 class QueryTest(TestCase):
