@@ -19,7 +19,7 @@ class ServiceTestContributionPlan(TestCase):
     def setUpClass(cls):
         super(ServiceTestContributionPlan, cls).setUpClass()
         if not User.objects.filter(username='Admin').exists():
-            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
+            User.objects.create_superuser(username='Admin', password='S\\/pe®Pąßw0rd™')
         cls.user = User.objects.filter(username='Admin').first()
         cls.contribution_plan_service = ContributionPlanService(cls.user)
         cls.contribution_plan_bundle_service = ContributionPlanBundleService(cls.user)

@@ -1,11 +1,10 @@
-import datetime
 import base64
 import json
-from unittest import mock
-from django.test import TestCase
 
 import graphene
-from contribution_plan.tests.helpers import *
+from core.models import User
+from contribution_plan.models import ContributionPlan
+from contribution_plan.tests.helpers import create_test_contribution_plan, create_test_contribution_plan_bundle, create_test_contribution_plan_bundle_details
 from contribution_plan import schema as contribution_plan_schema
 from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 from core import datetime
@@ -14,17 +13,15 @@ from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, Base
 from product.test_helpers import create_test_product
 from graphene import Schema
 from graphene.test import Client
-from django.contrib.contenttypes.models import ContentType
 
 
 class MutationTestContributionPlan(openIMISGraphQLTestCase):
-
 
     @classmethod
     def setUpClass(cls):
         super(MutationTestContributionPlan, cls).setUpClass()
         if not User.objects.filter(username='Admin').exists():
-            User.objects.create_superuser(username='Admin', password='S\/pe®Pąßw0rd™')
+            User.objects.create_superuser(username='Admin', password='S\\/pe®Pąßw0rd™')
         cls.user = create_test_interactive_user()
         cls.user_context = BaseTestContext(cls.user)
         cls.test_contribution_plan_bundle = create_test_contribution_plan_bundle(
@@ -149,7 +146,6 @@ class MutationTestContributionPlan(openIMISGraphQLTestCase):
 
     def test_contribution_plan_update_5_existing_date_valid_from_change(self):
         id = self.test_contribution_plan.id
-        version = self.test_contribution_plan.version
         input_param = {
             "id": f"{id}",
             "name": "XYZ test name xxxxx",
@@ -185,8 +181,6 @@ class MutationTestContributionPlan(openIMISGraphQLTestCase):
         )
 
     def test_contribution_plan_update_7_without_id_field(self):
-        id = self.test_contribution_plan.id
-        version = self.test_contribution_plan.version
         input_param = {
             "name": "XYZ test name xxxxx",
             "benefitPlanId": f"{self.test_contribution_plan.benefit_plan_id}",
@@ -253,7 +247,7 @@ class MutationTestContributionPlan(openIMISGraphQLTestCase):
 
     def execute_query(self, query, context=None):
         if context is None:
-            context =self.user_context.get_request()
+            context = self.user_context.get_request()
 
         query_result = self.graph_client.execute(query, context=context)
         query_data = query_result['data']
@@ -261,9 +255,8 @@ class MutationTestContributionPlan(openIMISGraphQLTestCase):
 
     def add_mutation(self, mutation_type, input_params, context=None, raw=False):
 
-        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt(), raw = raw) 
+        mutation_result = self.send_mutation(mutation_type, input_params, self.user_context.get_jwt(), raw=raw)
         return mutation_result
-
 
     def execute_mutation(self, mutation, context=None):
         if context is None:

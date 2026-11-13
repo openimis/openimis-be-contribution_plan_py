@@ -1,6 +1,6 @@
 from contribution_plan.apps import ContributionPlanConfig
 from core.gql.gql_mutations import DeleteInputType
-from core.gql.gql_mutations.base_mutation  import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
+from core.gql.gql_mutations.base_mutation import BaseMutation, BaseDeleteMutation, BaseReplaceMutation, \
     BaseHistoryModelCreateMutationMixin, BaseHistoryModelUpdateMutationMixin, \
     BaseHistoryModelDeleteMutationMixin, BaseHistoryModelReplaceMutationMixin
 from contribution_plan.gql.gql_mutations import ContributionPlanBundleDetailsInputType, \
@@ -30,7 +30,6 @@ class CreateContributionPlanBundleDetailsMutation(BaseHistoryModelCreateMutation
         if not user.has_perms(ContributionPlanConfig.gql_mutation_create_contributionplanbundle_perms):
             raise PermissionDenied(_("unauthorized"))
         validate_date_validity_range_on_create(cls._model, **data)
-
 
 
 class UpdateContributionPlanBundleDetailsMutation(LiveTargetMixin, BaseHistoryModelUpdateMutationMixin, BaseMutation):

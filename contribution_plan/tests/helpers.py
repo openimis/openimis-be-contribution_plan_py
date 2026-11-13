@@ -4,7 +4,6 @@ from contribution_plan.models import ContributionPlanBundle, ContributionPlan, \
     ContributionPlanBundleDetails, PaymentPlan
 from datetime import date
 
-from core.models import User
 from product.test_helpers import create_test_product
 from calcrule_contribution_income_percentage.calculation_rule import ContributionValuationRule
 from core.test_helpers import create_test_interactive_user

@@ -179,8 +179,6 @@ class ContributionPlanBundleService(object):
         return []
 
 
-
-
 class ContributionPlanBundleDetails(object):
 
     def __init__(self, user):

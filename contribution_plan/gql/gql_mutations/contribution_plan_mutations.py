@@ -68,7 +68,6 @@ class UpdateContributionPlanMutation(BaseHistoryModelUpdateMutationMixin, BaseMu
             raise PermissionDenied(_("unauthorized"))
         validate_date_validity_range_on_update(cls._model, **data)
 
-
     @classmethod
     def _mutate(cls, user, **data):
         if "date_valid_to" not in data:
