@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from core import models as core_models, fields
 from core.signals import Signal
-from graphql import ResolveInfo
+from graphql import GraphQLResolveInfo
 from contribution_plan.mixins import GenericPlanQuerysetMixin, GenericPlanManager
 
 
@@ -45,7 +45,7 @@ class ContributionPlanBundle(core_models.HistoryBusinessModel):
         # resolvers through append_validity_filter (see GenericPlanQuerysetMixin).
         if queryset is None:
             queryset = cls.objects.all()
-        if isinstance(user, ResolveInfo):
+        if isinstance(user, GraphQLResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:
             return queryset.filter(id=None)
@@ -140,7 +140,7 @@ class ContributionPlanBundleDetails(core_models.HistoryBusinessModel):
         # resolvers through append_validity_filter (see GenericPlanQuerysetMixin).
         if queryset is None:
             queryset = cls.objects.all()
-        if isinstance(user, ResolveInfo):
+        if isinstance(user, GraphQLResolveInfo):
             user = user.context.user
         if settings.ROW_SECURITY and user.is_anonymous:
             return queryset.filter(id=None)
